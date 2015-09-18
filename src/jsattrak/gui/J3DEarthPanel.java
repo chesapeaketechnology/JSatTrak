@@ -113,7 +113,7 @@ import name.gano.worldwind.layers.Earth.EcefTimeDepRenderableLayer;
 import name.gano.worldwind.sunshader.CustomSunPositionProvider;
 import name.gano.worldwind.view.AutoClipBasicOrbitView;
 import name.gano.worldwind.view.BasicModelView3;
-import name.gano.worldwind.view.BasicModelViewInputHandler3;
+
 
 /**
  *
@@ -215,7 +215,7 @@ public class J3DEarthPanel extends javax.swing.JPanel implements J3DEarthCompone
         //Configuration.setValue(AVKey.TESSELLATOR_CLASS_NAME, RectangularNormalTessellator.class.getName());
 
         // make a new instace from the shared wwj resource!
-        wwd = new WorldWindowGLCanvas(app.getWwd());
+        wwd = app.getWwd();
         
         // add WWJ to panel
         //
@@ -1085,7 +1085,8 @@ private void fullScreenButtonActionPerformed(java.awt.event.ActionEvent evt) {//
         
         if(this.isModelViewMode())
         {
-            wwd.getView().setNearClipDistance(modelViewNearClip);
+            //TODO
+           // wwd.getView().setNearClipDistance(modelViewNearClip);
         }
     }
 
@@ -1151,49 +1152,49 @@ private void fullScreenButtonActionPerformed(java.awt.event.ActionEvent evt) {//
             BasicModelView3 bmv;
             if(wwd.getView() instanceof BasicOrbitView)
             {
-                bmv = new BasicModelView3(((BasicOrbitView)wwd.getView()).getOrbitViewModel(), sat);
+//                bmv = new BasicModelView3(((BasicOrbitView)wwd.getView()), sat);
                 //bmv = new BasicModelView3(sat);
             }
             else
             {
-                bmv = new BasicModelView3(((BasicModelView3)wwd.getView()).getOrbitViewModel(), sat);
+//                bmv = new BasicModelView3(((BasicModelView3)wwd.getView()).getOrbitViewModel(), sat);
             }
             
-            // remove the old hover listener -- depending on this instance of the input handler class type
-            if( wwd.getInputHandler() instanceof AWTInputHandler)
-            {
-                ((AWTInputHandler) wwd.getInputHandler()).removeHoverSelectListener();
-            }
-            else if( wwd.getInputHandler() instanceof BasicModelViewInputHandler3)
-            {
-                ((BasicModelViewInputHandler3) wwd.getInputHandler()).removeHoverSelectListener();
-            }
-            
+//            // remove the old hover listener -- depending on this instance of the input handler class type
+//            if( wwd.getInputHandler() instanceof AWTInputHandler)
+//            {
+//                ((AWTInputHandler) wwd.getInputHandler()).removeHoverSelectListener();
+//            }
+//            else if( wwd.getInputHandler() instanceof BasicModelViewInputHandler3)
+//            {
+//             //   ((BasicModelViewInputHandler3) wwd.getInputHandler()).removeHoverSelectListener();
+//            }
+//            
             // set view
-            wwd.setView(bmv);
+            //wwd.setView(bmv);
 
             // remove the rest of the old input handler
             wwd.getInputHandler().setEventSource(null);
              
             // add new input handler
-            BasicModelViewInputHandler3 mih = new BasicModelViewInputHandler3();
-            mih.setEventSource(wwd);
-            wwd.setInputHandler(mih);
-            
-            // view smooth?
-            mih.setSmoothViewChanges(smoothViewChanges); // FALSE MAKES THE VIEW FAST!!
+            //BasicModelViewInputHandler3 mih = new BasicModelViewInputHandler3();
+//            mih.setEventSource(wwd);
+//            wwd.setInputHandler(mih);
+//            
+//            // view smooth?
+//            mih.setSmoothViewChanges(smoothViewChanges); // FALSE MAKES THE VIEW FAST!!
 
             // settings for great closeups!
             
             //TODO
             //wwd.getView().setNearClipDistance(modelViewNearClip);
             //wwd.getView().setFarClipDistance(modelViewFarClip);
-            bmv.setZoom(900000);
-            bmv.setPitch(Angle.fromDegrees(45));
+            //bmv.setZoom(900000);
+          //  bmv.setPitch(Angle.fromDegrees(45));
             
-            // change class for inputHandler
-            Configuration.setValue(AVKey.INPUT_HANDLER_CLASS_NAME, 
-                        BasicModelViewInputHandler3.class.getName());
+//            // change class for inputHandler
+//            Configuration.setValue(AVKey.INPUT_HANDLER_CLASS_NAME, 
+//                        BasicModelViewInputHandler3.class.getName());
 
             // re-setup control layer handler
             this.getWwd().addSelectListener(new ViewControlsSelectListener(wwd, viewControlsLayer));
