@@ -30,7 +30,7 @@ import gov.nasa.worldwind.geom.Angle;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.Layer;
 import gov.nasa.worldwind.layers.placename.PlaceNameLayer;
-import gov.nasa.worldwind.view.BasicOrbitView;
+import gov.nasa.worldwind.view.orbit.BasicOrbitView;
 import javax.swing.JOptionPane;
 import name.gano.astro.MathUtils;
 import name.gano.worldwind.view.BasicModelView3;
@@ -125,8 +125,9 @@ public class TestRPY extends javax.swing.JFrame
                 mih.setSmoothViewChanges(true); // FALSE MAKES THE VIEW FAST!!
                 
                 // settings for great closeups!
-                wwd.getView().setNearClipDistance(10000);
-                wwd.getView().setFarClipDistance(5.0E7);
+                //TODO
+                //wwd.getView().setNearClipDistance(10000);
+                //wwd.getView().setFarClipDistance(5.0E7);
                 bmv.setZoom(900000);
                 bmv.setPitch(Angle.fromDegrees(120));
                 

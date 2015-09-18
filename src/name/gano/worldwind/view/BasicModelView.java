@@ -32,8 +32,7 @@ import gov.nasa.worldwind.geom.Vec4;
 import gov.nasa.worldwind.globes.Globe;
 import gov.nasa.worldwind.render.DrawContext;
 import gov.nasa.worldwind.util.Logging;
-import gov.nasa.worldwind.view.AbstractView;
-import gov.nasa.worldwind.view.ViewSupport;
+
 import javax.media.opengl.GL;
 
 

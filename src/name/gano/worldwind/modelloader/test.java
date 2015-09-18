@@ -22,10 +22,26 @@
 
 package name.gano.worldwind.modelloader;
 
-import gov.nasa.worldwind.examples.ApplicationTemplate;
+
 import gov.nasa.worldwind.geom.Angle;
 import gov.nasa.worldwind.geom.Position;
+import gov.nasa.worldwind.render.Renderable;
+import gov.nasa.worldwindx.examples.ApplicationTemplate;
+import static gov.nasa.worldwindx.examples.ApplicationTemplate.insertBeforeCompass;
+import java.awt.Color;
+import java.util.Hashtable;
+
 import java.util.Random;
+import jsattrak.objects.AbstractSatellite;
+import jsattrak.objects.CustomSatellite;
+import jsattrak.objects.GroundStation;
+import jsattrak.utilities.ECEFModelRenderable;
+import jsattrak.utilities.OrbitModelRenderable;
+import name.gano.astro.time.Time;
+import name.gano.worldwind.layers.Earth.CoverageRenderableLayer;
+import name.gano.worldwind.layers.Earth.ECEFRenderableLayer;
+import name.gano.worldwind.layers.Earth.ECIRenderableLayer;
+import name.gano.worldwind.layers.Earth.EcefTimeDepRenderableLayer;
 import net.java.joglutils.model.ModelFactory;
 import net.java.joglutils.model.geometry.Model;
 
@@ -73,6 +89,57 @@ public class test extends ApplicationTemplate
                 model3D.setSize(300000);
                 
                 layer.addModel(model3D);
+                // hastable to store all the Ground Stations
+     Hashtable<String,GroundStation> gsHash = new Hashtable<String,GroundStation>();
+                
+                // Coverage Data Layer
+                //CoverageRenderableLayer cel = new CoverageRenderableLayer(app.getCoverageAnalyzer());
+        //cel.setEnabled(false); // off by default
+                //insertBeforeCompass(this.getWwd(),cel);
+     
+  
+
+
+
+
+     
+     
+                Hashtable<String, AbstractSatellite> satHash = new Hashtable<String, AbstractSatellite>();
+                 CustomSatellite prop = new CustomSatellite("poot",new Time());
+                 prop.setShow3DOrbitTrace(true);
+                 // display settings for the ISS
+                 prop.setShow3D(true);
+prop.setShow3DFootprint(false);
+prop.setShow3DName(false);
+prop.setSatColor(Color.GREEN);
+prop.setGroundTrackLagPeriodMultiplier(1);
+prop.setGroundTrackLeadPeriodMultiplier(2);
+prop.setGrnTrkPointsPerPeriod(131); //  smoother line than the 81 default
+prop.setGroundTrackIni2False(); // flag so satellite recalculates ground track now (not later)
+
+// set default 3d model and turn on the use of 3d models
+prop.setThreeDModelPath("isscomplete/iss_complete.3ds");
+prop.setUse3dModel(true);
+                 satHash.put("poot", prop);
+                double currentMJD;
+
+                // add EcefTimeDepRenderableLayer layer
+//                EcefTimeDepRenderableLayer timeDepLayer = new EcefTimeDepRenderableLayer(currentMJD,app);
+//        m.getLayers().add(timeDepLayer);
+                currentMJD = new Time().getMJD();
+                // add ECI Layer -- FOR SOME REASON IF BEFORE EFEF and turned off ECEF Orbits don't show up!! Coverage effecting this too, strange
+                ECIRenderableLayer eciLayer = new ECIRenderableLayer(currentMJD); // create ECI layer
+                OrbitModelRenderable orbitModel = new OrbitModelRenderable(satHash, this.getWwd().getModel().getGlobe());
+        eciLayer.addRenderable(orbitModel); // add renderable object
+        eciLayer.setCurrentMJD(currentMJD); // update time again after adding renderable
+        insertBeforeCompass(this.getWwd(),eciLayer); // add ECI Layer
+                Renderable eciRadialGrid;
+        //eciLayer.addRenderable(eciRadialGrid); // add grid (optional if it is on or not)
+                // add ECEF Layer
+                ECEFRenderableLayer ecefLayer = new ECEFRenderableLayer(); // create ECEF layer
+                ECEFModelRenderable ecefModel = new ECEFModelRenderable(satHash, gsHash, this.getWwd().getModel().getGlobe());
+        ecefLayer.addRenderable(ecefModel); // add renderable object
+        insertBeforeCompass(this.getWwd(),ecefLayer); // add ECI Layer
                 
                 insertBeforeCompass(this.getWwd(), layer);
                 this.getLayerPanel().update(this.getWwd());

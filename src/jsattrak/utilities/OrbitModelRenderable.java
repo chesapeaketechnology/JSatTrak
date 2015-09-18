@@ -24,6 +24,7 @@
 
 package jsattrak.utilities;
 
+import gov.nasa.worldwind.avlist.AVKey;
 import gov.nasa.worldwind.geom.Angle;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.geom.Vec4;
@@ -35,6 +36,7 @@ import gov.nasa.worldwind.render.GlobeAnnotation;
 import gov.nasa.worldwind.render.MultiLineTextRenderer;
 import gov.nasa.worldwind.render.Renderable;
 import gov.nasa.worldwind.util.Logging;
+import gov.nasa.worldwind.util.OGLStackHandler;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Point;
@@ -97,11 +99,11 @@ public class OrbitModelRenderable implements Renderable
             throw new IllegalArgumentException(msg);
         }
         
-        javax.media.opengl.GL gl = dc.getGL();
-        
+        javax.media.opengl.GL2 gl = dc.getGL().getGL2();
+           
 //        gl.glEnable(GL.GL_TEXTURE_2D); // removed - sun shading disabeled below
-        gl.glPushAttrib(javax.media.opengl.GL.GL_TEXTURE_BIT | javax.media.opengl.GL.GL_ENABLE_BIT | javax.media.opengl.GL.GL_CURRENT_BIT);
-        gl.glMatrixMode(javax.media.opengl.GL.GL_MODELVIEW);
+        gl.glPushAttrib(javax.media.opengl.GL2.GL_TEXTURE_BIT | javax.media.opengl.GL2.GL_ENABLE_BIT | javax.media.opengl.GL2.GL_CURRENT_BIT);
+        gl.glMatrixMode(javax.media.opengl.GL2.GL_MODELVIEW);
 
         // Added so that the colors wouldn't depend on sun shading
         gl.glDisable(GL.GL_TEXTURE_2D);
@@ -217,9 +219,11 @@ public class OrbitModelRenderable implements Renderable
             geoAttr.setFrameShape(FrameFactory.SHAPE_NONE);  // No frame
             geoAttr.setFont(Font.decode("Arial-ITALIC-12"));
             geoAttr.setTextColor(textColor);
-            geoAttr.setTextAlign(MultiLineTextRenderer.ALIGN_CENTER);
+//TODO            
+            geoAttr.setTextAlign(AVKey.CENTER);
             geoAttr.setDrawOffset(new Point(0, 5)); // centered just above
-            geoAttr.setEffect(MultiLineTextRenderer.EFFECT_OUTLINE);  // Black outline
+//TODO
+            geoAttr.setEffect(AVKey.TEXT_EFFECT_OUTLINE);  // Black outline
             geoAttr.setBackgroundColor(Color.BLACK);
             
             return geoAttr;

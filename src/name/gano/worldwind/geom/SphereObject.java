@@ -22,6 +22,7 @@
 
 package name.gano.worldwind.geom;
 
+import gov.nasa.worldwind.View;
 import gov.nasa.worldwind.geom.Extent;
 import gov.nasa.worldwind.geom.Frustum;
 import gov.nasa.worldwind.geom.Intersection;
@@ -31,6 +32,7 @@ import gov.nasa.worldwind.geom.Vec4;
 import gov.nasa.worldwind.render.*;
 import gov.nasa.worldwind.util.Logging;
 import java.awt.Color;
+import static java.lang.Math.PI;
 
 /**
  * Represents a sphere in three dimensional space.
@@ -351,6 +353,7 @@ public final class SphereObject implements Extent, Renderable
      * @param dc the <code>DrawContext</code> to be used
      * @throws IllegalArgumentException if <code>dc</code> is null
      */
+    @Override
     public void render(DrawContext dc)
     {
         if (dc == null)
@@ -360,16 +363,16 @@ public final class SphereObject implements Extent, Renderable
             throw new IllegalArgumentException(msg);
         }
 
-        javax.media.opengl.GL gl = dc.getGL();
+        javax.media.opengl.GL2 gl = dc.getGL().getGL2();
          
 
-        gl.glPushAttrib(javax.media.opengl.GL.GL_TEXTURE_BIT | javax.media.opengl.GL.GL_ENABLE_BIT
-            | javax.media.opengl.GL.GL_CURRENT_BIT);
-        gl.glDisable(javax.media.opengl.GL.GL_TEXTURE_2D);
+        gl.glPushAttrib(javax.media.opengl.GL2.GL_TEXTURE_BIT | javax.media.opengl.GL2.GL_ENABLE_BIT
+            | javax.media.opengl.GL2.GL_CURRENT_BIT);
+        gl.glDisable(javax.media.opengl.GL2.GL_TEXTURE_2D);
         
         gl.glColor3d( sphereColor.getRed()/255.0 , sphereColor.getGreen()/255.0 , sphereColor.getBlue()/255.0 ); // COLOR 
 
-        gl.glMatrixMode(javax.media.opengl.GL.GL_MODELVIEW);
+        gl.glMatrixMode(javax.media.opengl.GL2.GL_MODELVIEW);
         gl.glPushMatrix();
         gl.glTranslated(this.center.x, this.center.y, this.center.z);
         
@@ -531,5 +534,15 @@ public final class SphereObject implements Extent, Renderable
     public void setCenter(double x, double y, double z)
     {
         this.center = new Vec4(x,y,z,0.0);
+    }
+
+    @Override
+    public double getEffectiveRadius(Plane plane) {
+        return radius;
+    }
+
+    @Override
+    public double getProjectedArea(View view) {
+        return PI*(radius*radius); //To change body of generated methods, choose Tools | Templates.
     }
 }

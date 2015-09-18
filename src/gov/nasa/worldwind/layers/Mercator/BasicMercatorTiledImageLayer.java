@@ -6,11 +6,13 @@ All Rights Reserved.
 */
 package gov.nasa.worldwind.layers.Mercator;
 
-import com.sun.opengl.util.texture.*;
+
+import com.jogamp.opengl.util.texture.TextureData;
+import com.jogamp.opengl.util.texture.TextureIO;
 import gov.nasa.worldwind.*;
 import gov.nasa.worldwind.avlist.*;
 import gov.nasa.worldwind.cache.*;
-import gov.nasa.worldwind.formats.dds.DDSConverter;
+
 import gov.nasa.worldwind.geom.*;
 import gov.nasa.worldwind.render.DrawContext;
 import gov.nasa.worldwind.retrieve.*;
@@ -201,7 +203,7 @@ public class BasicMercatorTiledImageLayer extends MercatorTiledImageLayer
 	{
 		try
 		{
-			return TextureIO.newTextureData(url, useMipMaps, null);
+			return TextureIO.newTextureData(Configuration.getMaxCompatibleGLProfile(),url, useMipMaps, null);
 		}
 		catch (Exception e)
 		{
@@ -380,7 +382,8 @@ public class BasicMercatorTiledImageLayer extends MercatorTiledImageLayer
 					else if (outFile.getName().endsWith(".dds"))
 					{
 						// Convert to DDS and save the result.
-						buffer = DDSConverter.convertToDDS(buffer, contentType);
+						//TODO
+                                                //buffer = DDSConverter.convertToDDS(buffer, contentType);
 						if (buffer != null)
 							this.layer.saveBuffer(buffer, outFile);
 					}

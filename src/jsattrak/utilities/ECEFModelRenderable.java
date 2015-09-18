@@ -19,6 +19,7 @@
  */
 package jsattrak.utilities;
 
+import gov.nasa.worldwind.avlist.AVKey;
 import gov.nasa.worldwind.geom.Angle;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.geom.Vec4;
@@ -89,11 +90,11 @@ public class ECEFModelRenderable implements Renderable
             throw new IllegalArgumentException(msg);
         }
         
-        javax.media.opengl.GL gl = dc.getGL();
+        javax.media.opengl.GL2 gl = dc.getGL().getGL2();
         
         //gl.glEnable(GL.GL_TEXTURE_2D); // removed so the sun shading wouldn't effect line colors
-        gl.glPushAttrib(javax.media.opengl.GL.GL_TEXTURE_BIT | javax.media.opengl.GL.GL_ENABLE_BIT | javax.media.opengl.GL.GL_CURRENT_BIT);
-        gl.glMatrixMode(javax.media.opengl.GL.GL_MODELVIEW);
+        gl.glPushAttrib(javax.media.opengl.GL2.GL_TEXTURE_BIT | javax.media.opengl.GL2.GL_ENABLE_BIT | javax.media.opengl.GL2.GL_CURRENT_BIT);
+        gl.glMatrixMode(javax.media.opengl.GL2.GL_MODELVIEW);
 
         // Added so that the colors wouldn't depend on sun shading
         gl.glDisable(GL.GL_TEXTURE_2D);
@@ -250,9 +251,9 @@ public class ECEFModelRenderable implements Renderable
             geoAttr.setFrameShape(FrameFactory.SHAPE_NONE);  // No frame
             geoAttr.setFont(Font.decode("Arial-ITALIC-12"));
             geoAttr.setTextColor(textColor);
-            geoAttr.setTextAlign(MultiLineTextRenderer.ALIGN_CENTER);
+            geoAttr.setTextAlign(AVKey.CENTER);
             geoAttr.setDrawOffset(new Point(0, 5)); // centered just above
-            geoAttr.setEffect(MultiLineTextRenderer.EFFECT_OUTLINE);  // Black outline
+            geoAttr.setEffect(AVKey.TEXT_EFFECT_OUTLINE);  // Black outline
             geoAttr.setBackgroundColor(Color.BLACK);
             
             return geoAttr;

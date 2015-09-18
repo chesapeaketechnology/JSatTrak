@@ -31,7 +31,8 @@ import gov.nasa.worldwind.render.DrawContext;
 import java.util.Iterator;
 import java.util.Vector;
 import javax.media.opengl.GL;
-import net.java.joglutils.model.examples.DisplayListRenderer;
+import javax.media.opengl.GL2;
+import net.java.joglutils.model.DisplayListRenderer;
 import net.java.joglutils.model.iModel3DRenderer;
 
 /**
@@ -57,6 +58,7 @@ public class Model3DLayer_new extends AbstractLayer {
         list.remove(model);
     }
     
+    @Override
     protected void doRender(DrawContext dc) {
         
         // render using models own methods, not this layers
@@ -83,7 +85,7 @@ public class Model3DLayer_new extends AbstractLayer {
     
     // draw this layer
     protected void draw(DrawContext dc, WWModel3D_new model) {
-        GL gl = dc.getGL();
+        GL2 gl = dc.getGL().getGL2();
         Position pos = model.getPosition();
         Vec4 loc = dc.getGlobe().computePointFromPosition(pos);
         double localSize = this.computeSize(dc, loc, model);
@@ -100,7 +102,7 @@ public class Model3DLayer_new extends AbstractLayer {
             
             // attitude
             //if the base of the model is parallel to the x-y plane and the up vector is in the positive z direction it would be...
-            //gl.glMatrixMode(GL.GL_PROJECTION);
+            //gl.glMatrixMode(GL2.GL_PROJECTION);
             gl.glRotated(model.getYawDeg(), 0,0,1);
             gl.glRotated(model.getPitchDeg(), 1,0,0);
             gl.glRotated(model.getRollDeg(), 0,1,0);
@@ -110,7 +112,7 @@ public class Model3DLayer_new extends AbstractLayer {
 //             gl.glRotated(model.getYawDeg(),   0,1,0); // 0,0,1
 //              gl.glRotated(model.getPitchDeg(), 0,0,1);
 //              gl.glRotated(model.getRollDeg(),  0,1,0);
-            //gl.glMatrixMode(GL.GL_MODELVIEW);
+            //gl.glMatrixMode(GL2.GL_MODELVIEW);
             
             // Get an instance of the display list renderer
             iModel3DRenderer renderer = DisplayListRenderer.getInstance();
@@ -121,22 +123,22 @@ public class Model3DLayer_new extends AbstractLayer {
     
     // puts opengl in the correct state for this layer
     protected void beginDraw(DrawContext dc) {
-        GL gl = dc.getGL();
+        GL2 gl = dc.getGL().getGL2();
         
         // SEG - MAYBE USE LIGHTING TO SIMULATE SUN ON SPACE CRAFT??
         
 //        Vec4 cameraPosition = dc.getView().getEyePoint();
         
         gl.glPushAttrib(
-            GL.GL_TEXTURE_BIT |
-            GL.GL_COLOR_BUFFER_BIT |
-            GL.GL_DEPTH_BUFFER_BIT |
-            GL.GL_HINT_BIT |
-            GL.GL_POLYGON_BIT |
-            GL.GL_ENABLE_BIT | 
-            GL.GL_CURRENT_BIT | 
-            GL.GL_LIGHTING_BIT | 
-            GL.GL_TRANSFORM_BIT);
+            GL2.GL_TEXTURE_BIT |
+            GL2.GL_COLOR_BUFFER_BIT |
+            GL2.GL_DEPTH_BUFFER_BIT |
+            GL2.GL_HINT_BIT |
+            GL2.GL_POLYGON_BIT |
+            GL2.GL_ENABLE_BIT | 
+            GL2.GL_CURRENT_BIT | 
+            GL2.GL_LIGHTING_BIT | 
+            GL2.GL_TRANSFORM_BIT);
         
 //
 //        float[] lightPosition = {0F, 100000000f, 0f, 0f};
@@ -156,29 +158,29 @@ public class Model3DLayer_new extends AbstractLayer {
 //        float ambient = 0.0f;
 //        float[] model_ambient = {ambient, ambient, ambient, ambient}; // was 0.5f (all)
 //        
-//        gl.glLightModelfv(GL.GL_LIGHT_MODEL_AMBIENT, model_ambient, 0);
-//        gl.glLightfv(GL.GL_LIGHT1, GL.GL_POSITION, lightPosition, 0);
-//        gl.glLightfv(GL.GL_LIGHT1, GL.GL_DIFFUSE, lightDiffuse, 0);
-//        gl.glLightfv(GL.GL_LIGHT1, GL.GL_AMBIENT, lightAmbient, 0);
-//        gl.glLightfv(GL.GL_LIGHT1, GL.GL_SPECULAR, lightSpecular, 0);
+//        gl.glLightModelfv(GL2.GL_LIGHT_MODEL_AMBIENT, model_ambient, 0);
+//        gl.glLightfv(GL2.GL_LIGHT1, GL2.GL_POSITION, lightPosition, 0);
+//        gl.glLightfv(GL2.GL_LIGHT1, GL2.GL_DIFFUSE, lightDiffuse, 0);
+//        gl.glLightfv(GL2.GL_LIGHT1, GL2.GL_AMBIENT, lightAmbient, 0);
+//        gl.glLightfv(GL2.GL_LIGHT1, GL2.GL_SPECULAR, lightSpecular, 0);
 
-//        gl.glDisable(GL.GL_LIGHT0);
-//        //gl.glEnable(GL.GL_LIGHT0);
-//        gl.glEnable(GL.GL_LIGHT1);
-//        gl.glEnable(GL.GL_LIGHTING);
-//        gl.glDisable(GL.GL_LIGHTING);
-//        gl.glEnable(GL.GL_NORMALIZE);
+//        gl.glDisable(GL2.GL_LIGHT0);
+//        //gl.glEnable(GL2.GL_LIGHT0);
+//        gl.glEnable(GL2.GL_LIGHT1);
+//        gl.glEnable(GL2.GL_LIGHTING);
+//        gl.glDisable(GL2.GL_LIGHTING);
+//        gl.glEnable(GL2.GL_NORMALIZE);
         
         
-        gl.glMatrixMode(GL.GL_MODELVIEW);
+        gl.glMatrixMode(GL2.GL_MODELVIEW);
         gl.glPushMatrix();
     }
     
     // resets opengl state
     protected void endDraw(DrawContext dc) {
-        GL gl = dc.getGL();
+        GL2 gl = dc.getGL().getGL2();
         
-        gl.glMatrixMode(javax.media.opengl.GL.GL_MODELVIEW);
+        gl.glMatrixMode(javax.media.opengl.GL2.GL_MODELVIEW);
         gl.glPopMatrix();
         
         gl.glPopAttrib();

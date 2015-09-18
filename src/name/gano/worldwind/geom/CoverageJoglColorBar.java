@@ -22,17 +22,19 @@
 
 package name.gano.worldwind.geom;
 
-import com.sun.opengl.util.j2d.TextRenderer;
+import gov.nasa.worldwind.util.OGLTextRenderer;
 import gov.nasa.worldwind.View;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.geom.Vec4;
 import gov.nasa.worldwind.render.DrawContext;
 import gov.nasa.worldwind.render.Renderable;
+import gov.nasa.worldwind.render.TextRenderer;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.geom.Rectangle2D;
 import javax.media.opengl.GL;
+import javax.media.opengl.GL2;
 import jsattrak.coverage.CoverageAnalyzer;
 
 /**
@@ -58,6 +60,7 @@ public class CoverageJoglColorBar implements Renderable
     }
        
     // Rendering
+    @Override
     public void render(DrawContext dc)
     {
 
@@ -68,7 +71,7 @@ public class CoverageJoglColorBar implements Renderable
 
         }
 
-        GL gl = dc.getGL();
+        GL2 gl = dc.getGL().getGL2();
 
         boolean attribsPushed = false;
         boolean modelviewPushed = false;
@@ -76,14 +79,14 @@ public class CoverageJoglColorBar implements Renderable
 
         try
         {
-            gl.glPushAttrib(GL.GL_DEPTH_BUFFER_BIT | GL.GL_COLOR_BUFFER_BIT | GL.GL_ENABLE_BIT | GL.GL_TEXTURE_BIT | GL.GL_TRANSFORM_BIT | GL.GL_VIEWPORT_BIT | GL.GL_CURRENT_BIT);
+            gl.glPushAttrib(GL2.GL_DEPTH_BUFFER_BIT | GL2.GL_COLOR_BUFFER_BIT | GL2.GL_ENABLE_BIT | GL2.GL_TEXTURE_BIT | GL2.GL_TRANSFORM_BIT | GL2.GL_VIEWPORT_BIT | GL2.GL_CURRENT_BIT);
             attribsPushed = true;
 
-            gl.glDisable(GL.GL_TEXTURE_2D);		// no textures
+            gl.glDisable(GL2.GL_TEXTURE_2D);		// no textures
 
-            gl.glEnable(GL.GL_BLEND);
-            gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
-            gl.glDisable(GL.GL_DEPTH_TEST);
+            gl.glEnable(GL2.GL_BLEND);
+            gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE_MINUS_SRC_ALPHA);
+            gl.glDisable(GL2.GL_DEPTH_TEST);
 
             double width = dc.getDrawableWidth();
             double height = dc.getDrawableHeight();
@@ -91,14 +94,14 @@ public class CoverageJoglColorBar implements Renderable
             // Load a parallel projection with xy dimensions (viewportWidth, viewportHeight)
             // into the GL projection matrix.
             java.awt.Rectangle viewport = dc.getView().getViewport();
-            gl.glMatrixMode(javax.media.opengl.GL.GL_PROJECTION);
+            gl.glMatrixMode(javax.media.opengl.GL2.GL_PROJECTION);
             gl.glPushMatrix();
             projectionPushed = true;
             gl.glLoadIdentity();
             double maxwh = width > height ? width : height;
             gl.glOrtho(0d, viewport.width, 0d, viewport.height, -0.6 * maxwh, 0.6 * maxwh);
 
-            gl.glMatrixMode(GL.GL_MODELVIEW);
+            gl.glMatrixMode(GL2.GL_MODELVIEW);
             gl.glPushMatrix();
             modelviewPushed = true;
             gl.glLoadIdentity();
@@ -159,14 +162,14 @@ public class CoverageJoglColorBar implements Renderable
                 String label = ca.getUpperBoundLabel();
                 gl.glLoadIdentity();
                 gl.glDisable(GL.GL_CULL_FACE);
-                drawLabel(label,
+                drawLabel(dc, label,
                         locationSW.add3(new Vec4(divWidth * scale, 0 * height * scale - height * scale / 2 - 10, 0)));
 
                 //String label = String.format("%.0f ", divSize) + unitLabel;
                 label = ca.getLowerBoundLabel();
                 gl.glLoadIdentity();
                 gl.glDisable(GL.GL_CULL_FACE);
-                drawLabel(label,
+                drawLabel(dc, label,
                         locationSW.add3(new Vec4(0 + 12, 0 * height * scale - height * scale / 2 - 10, 0)));
 
             }
@@ -175,12 +178,12 @@ public class CoverageJoglColorBar implements Renderable
         {
             if(projectionPushed)
             {
-                gl.glMatrixMode(GL.GL_PROJECTION);
+                gl.glMatrixMode(GL2.GL_PROJECTION);
                 gl.glPopMatrix();
             }
             if(modelviewPushed)
             {
-                gl.glMatrixMode(GL.GL_MODELVIEW);
+                gl.glMatrixMode(GL2.GL_MODELVIEW);
                 gl.glPopMatrix();
             }
             if(attribsPushed)
@@ -257,7 +260,7 @@ public class CoverageJoglColorBar implements Renderable
     private void drawScale(DrawContext dc, double width, double height)
     {
 
-        GL gl = dc.getGL();
+        GL2 gl = dc.getGL().getGL2();
 
         // draw lines at end points
         gl.glBegin(GL.GL_LINE_STRIP);
@@ -282,11 +285,12 @@ public class CoverageJoglColorBar implements Renderable
     }
     
     // Draw the scale label
-    private void drawLabel(String text, Vec4 screenPoint)
+    private void drawLabel(DrawContext dc, String text, Vec4 screenPoint)
     {
         if(this.textRenderer == null)
         {
-            this.textRenderer = new TextRenderer(this.defaultFont, true, true);
+            this.textRenderer = OGLTextRenderer.getOrCreateTextRenderer(dc.getTextRendererCache(), defaultFont);
+            
         }
 
         Rectangle2D nameBound = this.textRenderer.getBounds(text);

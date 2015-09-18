@@ -20,6 +20,7 @@
 
 package name.gano.worldwind.modelloader;
 
+import gov.nasa.worldwind.geom.LatLon;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.geom.Vec4;
 import gov.nasa.worldwind.layers.AbstractLayer;
@@ -27,7 +28,8 @@ import gov.nasa.worldwind.render.DrawContext;
 import java.util.Iterator;
 import java.util.Vector;
 import javax.media.opengl.GL;
-import net.java.joglutils.model.examples.DisplayListRenderer;
+import javax.media.opengl.GL2;
+import net.java.joglutils.model.DisplayListRenderer;
 import net.java.joglutils.model.iModel3DRenderer;
 
 /**
@@ -52,6 +54,7 @@ public class Model3DLayer extends AbstractLayer {
         list.remove(model);
     }
     
+    @Override
     protected void doRender(DrawContext dc) {
         try {
             beginDraw(dc);
@@ -78,7 +81,7 @@ public class Model3DLayer extends AbstractLayer {
     
     // draw this layer
     protected void draw(DrawContext dc, WWModel3D model) {
-        GL gl = dc.getGL();
+        GL2 gl = dc.getGL().getGL2();
         
         Position pos = model.getPosition();
         if (model.getFollowTerrain())
@@ -89,7 +92,8 @@ public class Model3DLayer extends AbstractLayer {
         		// Adjust position for 1/2 model height
         		elevation += model.getHeight() / 2.0;
         	}
-        	pos = new Position(pos.getLatLon(), elevation);
+                
+        	pos = new Position(new LatLon(pos.getLatitude(),pos.getLongitude()), elevation);
         }
         	
         Vec4 loc = dc.getGlobe().computePointFromPosition(pos);
@@ -118,20 +122,20 @@ public class Model3DLayer extends AbstractLayer {
     
     // puts opengl in the correct state for this layer
     protected void beginDraw(DrawContext dc) {
-        GL gl = dc.getGL();
+        GL2 gl = dc.getGL().getGL2();
         
         Vec4 cameraPosition = dc.getView().getEyePoint();
         
         gl.glPushAttrib(
-            GL.GL_TEXTURE_BIT |
-            GL.GL_COLOR_BUFFER_BIT |
-            GL.GL_DEPTH_BUFFER_BIT |
-            GL.GL_HINT_BIT |
-            GL.GL_POLYGON_BIT |
-            GL.GL_ENABLE_BIT | 
-            GL.GL_CURRENT_BIT | 
-            GL.GL_LIGHTING_BIT | 
-            GL.GL_TRANSFORM_BIT);
+            GL2.GL_TEXTURE_BIT |
+            GL2.GL_COLOR_BUFFER_BIT |
+            GL2.GL_DEPTH_BUFFER_BIT |
+            GL2.GL_HINT_BIT |
+            GL2.GL_POLYGON_BIT |
+            GL2.GL_ENABLE_BIT | 
+            GL2.GL_CURRENT_BIT | 
+            GL2.GL_LIGHTING_BIT | 
+            GL2.GL_TRANSFORM_BIT);
 
         //float[] lightPosition = {0F, 100000000f, 0f, 0f};
         float[] lightPosition =
@@ -146,26 +150,26 @@ public class Model3DLayer extends AbstractLayer {
         
         float[] model_ambient = {0.5f, 0.5f, 0.5f, 1.0f};
         
-        gl.glLightModelfv(GL.GL_LIGHT_MODEL_AMBIENT, model_ambient, 0);
-        gl.glLightfv(GL.GL_LIGHT1, GL.GL_POSITION, lightPosition, 0);
-        gl.glLightfv(GL.GL_LIGHT1, GL.GL_DIFFUSE, lightDiffuse, 0);
-        gl.glLightfv(GL.GL_LIGHT1, GL.GL_AMBIENT, lightAmbient, 0);
-        gl.glLightfv(GL.GL_LIGHT1, GL.GL_SPECULAR, lightSpecular, 0);
+        gl.glLightModelfv(GL2.GL_LIGHT_MODEL_AMBIENT, model_ambient, 0);
+        gl.glLightfv(GL2.GL_LIGHT1, GL2.GL_POSITION, lightPosition, 0);
+        gl.glLightfv(GL2.GL_LIGHT1, GL2.GL_DIFFUSE, lightDiffuse, 0);
+        gl.glLightfv(GL2.GL_LIGHT1, GL2.GL_AMBIENT, lightAmbient, 0);
+        gl.glLightfv(GL2.GL_LIGHT1, GL2.GL_SPECULAR, lightSpecular, 0);
 
-        gl.glDisable(GL.GL_LIGHT0);
-        gl.glEnable(GL.GL_LIGHT1);
-        gl.glEnable(GL.GL_LIGHTING);
-        gl.glEnable(GL.GL_NORMALIZE);
+        gl.glDisable(GL2.GL_LIGHT0);
+        gl.glEnable(GL2.GL_LIGHT1);
+        gl.glEnable(GL2.GL_LIGHTING);
+        gl.glEnable(GL2.GL_NORMALIZE);
         
-        gl.glMatrixMode(GL.GL_MODELVIEW);
+        gl.glMatrixMode(GL2.GL_MODELVIEW);
         gl.glPushMatrix();
     }
     
     // resets opengl state
     protected void endDraw(DrawContext dc) {
-        GL gl = dc.getGL();
+        GL2 gl = dc.getGL().getGL2();
         
-        gl.glMatrixMode(javax.media.opengl.GL.GL_MODELVIEW);
+        gl.glMatrixMode(javax.media.opengl.GL2.GL_MODELVIEW);
         gl.glPopMatrix();
         
         gl.glPopAttrib();

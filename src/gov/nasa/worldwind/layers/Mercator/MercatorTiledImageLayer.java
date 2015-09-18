@@ -7,12 +7,13 @@ All Rights Reserved.
 package gov.nasa.worldwind.layers.Mercator;
 
 
-import com.sun.opengl.util.j2d.TextRenderer;
+
 import gov.nasa.worldwind.*;
 import gov.nasa.worldwind.geom.*;
 import gov.nasa.worldwind.globes.Globe;
 import gov.nasa.worldwind.layers.AbstractLayer;
 import gov.nasa.worldwind.render.DrawContext;
+import gov.nasa.worldwind.render.TextRenderer;
 import gov.nasa.worldwind.retrieve.*;
 import gov.nasa.worldwind.util.*;
 
@@ -26,6 +27,7 @@ import java.net.*;
 import java.nio.ByteBuffer;
 import java.util.*;
 import java.util.concurrent.PriorityBlockingQueue;
+import javax.media.opengl.GL2;
 
 /**
  * TiledImageLayer modified 2009-02-03 to add support for Mercator projections.
@@ -177,11 +179,13 @@ public abstract class MercatorTiledImageLayer extends AbstractLayer
 		return requestQ;
 	}
 
+        @Override
 	public boolean isMultiResolution()
 	{
 		return this.getLevels() != null && this.getLevels().getNumLevels() > 1;
 	}
 
+        @Override
 	public boolean isAtMaxResolution()
 	{
 		return this.atMaxResolution;
@@ -556,24 +560,24 @@ public abstract class MercatorTiledImageLayer extends AbstractLayer
 			sortedTiles = this.currentTiles.toArray(sortedTiles);
 			Arrays.sort(sortedTiles, levelComparer);
 
-			GL gl = dc.getGL();
+			GL2 gl = dc.getGL().getGL2();
 
 			if (this.isUseTransparentTextures() || this.getOpacity() < 1)
 			{
-				gl.glPushAttrib(GL.GL_COLOR_BUFFER_BIT | GL.GL_POLYGON_BIT
-						| GL.GL_CURRENT_BIT);
+				gl.glPushAttrib(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_POLYGON_BIT
+						| GL2.GL_CURRENT_BIT);
 				gl.glColor4d(1d, 1d, 1d, this.getOpacity());
-				gl.glEnable(GL.GL_BLEND);
-				gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
+				gl.glEnable(GL2.GL_BLEND);
+				gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE_MINUS_SRC_ALPHA);
 			}
 			else
 			{
-				gl.glPushAttrib(GL.GL_COLOR_BUFFER_BIT | GL.GL_POLYGON_BIT);
+				gl.glPushAttrib(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_POLYGON_BIT);
 			}
 
-			gl.glPolygonMode(GL.GL_FRONT, GL.GL_FILL);
-			gl.glEnable(GL.GL_CULL_FACE);
-			gl.glCullFace(GL.GL_BACK);
+			gl.glPolygonMode(GL2.GL_FRONT, GL2.GL_FILL);
+			gl.glEnable(GL2.GL_CULL_FACE);
+			gl.glCullFace(GL2.GL_BACK);
 
 			dc.setPerFrameStatistic(PerformanceStatistic.IMAGE_TILE_COUNT,
 					this.tileCountName, this.currentTiles.size());
@@ -680,9 +684,9 @@ public abstract class MercatorTiledImageLayer extends AbstractLayer
 			this.textRenderer.setUseVertexArrays(false);
 		}
 
-		dc.getGL().glDisable(GL.GL_DEPTH_TEST);
-		dc.getGL().glDisable(GL.GL_BLEND);
-		dc.getGL().glDisable(GL.GL_TEXTURE_2D);
+		dc.getGL().glDisable(GL2.GL_DEPTH_TEST);
+		dc.getGL().glDisable(GL2.GL_BLEND);
+		dc.getGL().glDisable(GL2.GL_TEXTURE_2D);
 
 		this.textRenderer.setColor(java.awt.Color.YELLOW);
 		this.textRenderer.beginRendering(viewport.width, viewport.height);
@@ -709,20 +713,20 @@ public abstract class MercatorTiledImageLayer extends AbstractLayer
 			ArrayList<MercatorTextureTile> tiles)
 	{
 		float[] previousColor = new float[4];
-		dc.getGL().glGetFloatv(GL.GL_CURRENT_COLOR, previousColor, 0);
-		dc.getGL().glColor3d(0, 1, 0);
+		dc.getGL().getGL2().glGetFloatv(GL2.GL_CURRENT_COLOR, previousColor, 0);
+		dc.getGL().getGL2().glColor3d(0, 1, 0);
 
 		for (MercatorTextureTile tile : tiles)
 		{
 			((Cylinder) tile.getExtent(dc)).render(dc);
 		}
 
-		Cylinder c = dc.getGlobe().computeBoundingCylinder(
-				dc.getVerticalExaggeration(), this.levels.getSector());
-		dc.getGL().glColor3d(1, 1, 0);
+               Cylinder c = Sector.computeBoundingCylinder(dc.getGlobe(), dc.getVerticalExaggeration(), this.levels.getSector());
+
+		dc.getGL().getGL2().glColor3d(1, 1, 0);
 		c.render(dc);
 
-		dc.getGL().glColor4fv(previousColor, 0);
+		dc.getGL().getGL2().glColor4fv(previousColor, 0);
 	}
 
 	// ============== Image Composition ======================= //

@@ -22,7 +22,7 @@
  */
 package name.gano.worldwind.sunshader;
 
-import gov.nasa.worldwind.examples.sunlight.SunPositionProvider;
+
 import gov.nasa.worldwind.geom.LatLon;
 import name.gano.astro.bodies.Sun;
 
@@ -30,7 +30,7 @@ import name.gano.astro.bodies.Sun;
  *
  * @author sgano
  */
-public class CustomSunPositionProvider implements SunPositionProvider
+public class CustomSunPositionProvider
 {
     private Sun sun;
 

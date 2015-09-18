@@ -24,10 +24,12 @@
 
 package name.gano.worldwind.texture;
 
-import com.sun.opengl.util.texture.Texture;
-import com.sun.opengl.util.texture.TextureIO;
+import com.jogamp.opengl.util.texture.Texture;
+import com.jogamp.opengl.util.texture.TextureIO;
+import gov.nasa.worldwind.render.DrawContext;
 import java.io.File;
 import javax.media.opengl.GL;
+import javax.media.opengl.GL2;
 
 /**
  *
@@ -36,15 +38,16 @@ import javax.media.opengl.GL;
 public class TextureUtils
 {
     
-    public static Texture loadTexture(String fnm)
+    public static Texture loadTexture(DrawContext dc, String fnm)
     {
         String fileName = "images/" + fnm;
         Texture tex = null;
         try
         {
             tex = TextureIO.newTexture( new File(fileName), false);
-            tex.setTexParameteri(GL.GL_TEXTURE_MAG_FILTER, GL.GL_NEAREST);
-            tex.setTexParameteri(GL.GL_TEXTURE_MIN_FILTER, GL.GL_NEAREST);
+            
+            tex.setTexParameteri(dc.getGL().getGL2(),GL2.GL_TEXTURE_MAG_FILTER, GL2.GL_NEAREST);
+            tex.setTexParameteri(dc.getGL().getGL2(),GL2.GL_TEXTURE_MIN_FILTER, GL2.GL_NEAREST);
         }
         catch(Exception e)
         { 
