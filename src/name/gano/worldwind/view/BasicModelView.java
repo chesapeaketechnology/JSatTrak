@@ -32,6 +32,8 @@ import gov.nasa.worldwind.geom.Vec4;
 import gov.nasa.worldwind.globes.Globe;
 import gov.nasa.worldwind.render.DrawContext;
 import gov.nasa.worldwind.util.Logging;
+import gov.nasa.worldwind.view.ViewUtil;
+import gov.nasa.worldwind.view.orbit.BasicOrbitView;
 
 import javax.media.opengl.GL;
 
@@ -41,7 +43,7 @@ import javax.media.opengl.GL;
  * @author dcollins
  * @version $Id: BasicOrbitView.java 3557 2007-11-17 04:10:32Z dcollins $
  */
-public class BasicModelView extends AbstractView //implements OrbitView
+public class BasicModelView extends BasicOrbitView //implements OrbitView
 {
     // View attributes.
     private BasicModelViewModel basicModelViewModel;
@@ -51,19 +53,6 @@ public class BasicModelView extends AbstractView //implements OrbitView
      
      private Position iniPosition;
      
-     double minClipDist = 100; // 900000
-     
-     // new 
-     private double nearClipDistance = -1; // Default to auto-configure.
-    private double farClipDistance = -1;  // Default to auto-configure.
-    private java.awt.Rectangle viewport = new java.awt.Rectangle();
-    private Angle fieldOfView = Angle.fromDegrees(45);
-    // Properties updated during the most recent call to apply().
-    private DrawContext dc;
-    private final ViewSupport viewSupport = new ViewSupport();
-    // TODO: make configurable
-    private static final double MINIMUM_NEAR_DISTANCE = 2;
-    private static final double MINIMUM_FAR_DISTANCE = 100;
 
      // constructors
     public BasicModelView(Position centerPosition, Globe globe)
@@ -158,7 +147,7 @@ public class BasicModelView extends AbstractView //implements OrbitView
         Matrix projectionMatrix = this.createProjectionMatrix(nearDistance, farDistance);
         
         //this.loadModelViewProjection(dc, modelViewMatrix, projectionMatrix);
-        viewSupport.loadGLViewState(dc, modelViewMatrix, projectionMatrix);
+        loadGLViewState(dc, modelViewMatrix, projectionMatrix);
     }
 
     public Frustum getFrustum()
@@ -295,40 +284,7 @@ public class BasicModelView extends AbstractView //implements OrbitView
         return Position.ZERO;
     }
     
-     private double computeNearDistance(Position eyePosition)
-    {
-        double near = 0;
-        if (eyePosition != null && this.dc != null)
-        {
-            double elevation = this.viewSupport.computeElevationAboveSurface(this.dc, eyePosition);
-            double tanHalfFov = this.fieldOfView.tanHalfAngle();
-            near = elevation / (2 * Math.sqrt(2 * tanHalfFov * tanHalfFov + 1));
-        }
-        return near < MINIMUM_NEAR_DISTANCE ? MINIMUM_NEAR_DISTANCE : near;
-    }
-
-    private double computeFarDistance(Position eyePosition)
-    {
-        double far = 0;
-        if (eyePosition != null)
-        {
-            far = computeHorizonDistance(eyePosition);
-        }
-        
-        return far < MINIMUM_FAR_DISTANCE ? MINIMUM_FAR_DISTANCE : far;
-    }
     
-    private double computeHorizonDistance(Position eyePosition)
-    {
-        if (this.globe != null && eyePosition != null)
-        {
-            double elevation = eyePosition.getElevation();
-            double elevationAboveSurface = this.viewSupport.computeElevationAboveSurface(this.dc, eyePosition);
-            return this.viewSupport.computeHorizonDistance(this.globe, Math.max(elevation, elevationAboveSurface));
-        }
-
-        return 0;
-    }
     
     public double computeHorizonDistance()
     {
@@ -342,20 +298,11 @@ public class BasicModelView extends AbstractView //implements OrbitView
         return horizon;
     }
     
-    private Position computeEyePositionFromModelview()
-    {
-//        if (this.globe != null)
-//        {
-//            Vec4 eyePoint = Vec4.UNIT_W.transformBy4(this.modelviewInv);
-//            return this.globe.computePositionFromPoint(eyePoint);
-//        }
-
-        return Position.ZERO;
-    }
+   
     
     public double computePixelSizeAtDistance(double distance)
     {
-        return this.viewSupport.computePixelSizeAtDistance(distance, this.fieldOfView, this.viewport);
+        return ViewUtil.computePixelSizeAtDistance(distance, this.fieldOfView, this.viewport);
     }
     
     public Position computePositionFromScreenPoint(double x, double y)

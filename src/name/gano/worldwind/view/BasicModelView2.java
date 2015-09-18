@@ -32,8 +32,9 @@ import gov.nasa.worldwind.geom.Vec4;
 import gov.nasa.worldwind.globes.Globe;
 import gov.nasa.worldwind.render.DrawContext;
 import gov.nasa.worldwind.util.Logging;
-import gov.nasa.worldwind.view.BasicOrbitView;
-import gov.nasa.worldwind.view.ViewSupport;
+import gov.nasa.worldwind.view.ViewUtil;
+import gov.nasa.worldwind.view.orbit.BasicOrbitView;
+
 import javax.media.opengl.GL;
 
 
@@ -61,7 +62,7 @@ public class BasicModelView2 extends BasicOrbitView //implements OrbitView
     private Angle fieldOfView = Angle.fromDegrees(45);
     // Properties updated during the most recent call to apply().
     private DrawContext dc;
-    private final ViewSupport viewSupport = new ViewSupport();
+
     // TODO: make configurable
     private static final double MINIMUM_NEAR_DISTANCE = 2;
     private static final double MINIMUM_FAR_DISTANCE = 100;
@@ -178,7 +179,7 @@ public class BasicModelView2 extends BasicOrbitView //implements OrbitView
         Matrix projectionMatrix = this.createProjectionMatrix(nearDistance, farDistance);
         
         //this.loadModelViewProjection(dc, modelViewMatrix, projectionMatrix);
-        viewSupport.loadGLViewState(dc, modelViewMatrix, projectionMatrix);
+        loadGLViewState(dc, modelViewMatrix, projectionMatrix);
     }
 
     public Frustum getFrustum()
@@ -320,7 +321,7 @@ public class BasicModelView2 extends BasicOrbitView //implements OrbitView
         double near = 0;
         if (eyePosition != null && this.dc != null)
         {
-            double elevation = this.viewSupport.computeElevationAboveSurface(this.dc, eyePosition);
+            double elevation = ViewUtil.computeElevationAboveSurface(this.dc, eyePosition);
             double tanHalfFov = this.fieldOfView.tanHalfAngle();
             near = elevation / (2 * Math.sqrt(2 * tanHalfFov * tanHalfFov + 1));
         }
@@ -343,8 +344,8 @@ public class BasicModelView2 extends BasicOrbitView //implements OrbitView
         if (this.globe != null && eyePosition != null)
         {
             double elevation = eyePosition.getElevation();
-            double elevationAboveSurface = this.viewSupport.computeElevationAboveSurface(this.dc, eyePosition);
-            return this.viewSupport.computeHorizonDistance(this.globe, Math.max(elevation, elevationAboveSurface));
+            double elevationAboveSurface = ViewUtil.computeElevationAboveSurface(this.dc, eyePosition);
+            return ViewUtil.computeHorizonDistance(this.globe, Math.max(elevation, elevationAboveSurface));
         }
 
         return 0;

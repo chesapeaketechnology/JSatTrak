@@ -29,14 +29,10 @@ import gov.nasa.worldwind.globes.Globe;
 import gov.nasa.worldwind.render.DrawContext;
 import gov.nasa.worldwind.util.Logging;
 import gov.nasa.worldwind.util.RestorableSupport;
+import gov.nasa.worldwind.view.orbit.BasicOrbitView;
+import gov.nasa.worldwind.view.orbit.OrbitView;
 
-import gov.nasa.worldwind.view.AbstractView;
-import gov.nasa.worldwind.view.BasicOrbitViewModel;
-import gov.nasa.worldwind.view.OrbitView;
-import gov.nasa.worldwind.view.OrbitViewCollisionSupport;
-import gov.nasa.worldwind.view.OrbitViewLimits;
-import gov.nasa.worldwind.view.OrbitViewModel;
-import gov.nasa.worldwind.view.ViewSupport;
+
 import javax.media.opengl.GL;
 import jsattrak.objects.AbstractSatellite;
 
@@ -44,41 +40,9 @@ import jsattrak.objects.AbstractSatellite;
  * @author dcollins
  * @version $Id: BasicOrbitView.java 5276 2008-05-02 04:33:57Z dcollins $
  */
-public class BasicModelView3 extends AbstractView implements OrbitView
+public class BasicModelView3 extends BasicOrbitView implements OrbitView
 {
-    private Position center = Position.ZERO;
-    private Angle heading = Angle.ZERO;
-    private Angle pitch = Angle.ZERO;
-    private double zoom;
-    private Angle fieldOfView = Angle.fromDegrees(45);
-    private double nearClipDistance = -1; // Default to auto-configure.
-    private double farClipDistance = -1;  // Default to auto-configure.
-    // Model for defining translations between OrbitView coordinates and 3D coordinates.
-    private final OrbitViewModel orbitViewModel;
-    // Stateless helper classes.
-    private final ViewSupport viewSupport = new ViewSupport();
-    private final OrbitViewCollisionSupport collisionSupport = new OrbitViewCollisionSupport();
-    // Properties updated in doApply().
-    private Matrix modelview = Matrix.IDENTITY;
-    private Matrix modelviewInv = Matrix.IDENTITY;
-    private Matrix projection = Matrix.IDENTITY;
-    private java.awt.Rectangle viewport = new java.awt.Rectangle();
-    private Frustum frustum = new Frustum();
-    // Properties updated during the most recent call to apply().
-    private DrawContext dc;
-    private Globe globe;
-    private Position lastEyePosition = null;
-    private Vec4 lastEyePoint = null;
-    private Vec4 lastUpVector = null;
-    private Vec4 lastForwardVector = null;
-    private Frustum lastFrustumInModelCoords = null;
-
-    // TODO: make configurable
-    private static final double MINIMUM_NEAR_DISTANCE = 2;
-    private static final double MINIMUM_FAR_DISTANCE = 100;
-    private static final double COLLISION_THRESHOLD = 10;
-    private static final int COLLISION_NUM_ITERATIONS = 4;
-    
+   
     // ofsets
     private double xOffset = 0;
     private double yOffset = 0;
@@ -88,12 +52,11 @@ public class BasicModelView3 extends AbstractView implements OrbitView
     // satellite object to follow
     private AbstractSatellite sat;
 
-    // new WWJ values
-    protected OrbitViewLimits orbitViewLimits;
+
 
     public BasicModelView3()
     {
-        this(new BasicOrbitViewModel());
+        this(new BasicOrbitView());
     }
     
     // --- constructor

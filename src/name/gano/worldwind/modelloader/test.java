@@ -35,8 +35,10 @@ import java.util.Random;
 import jsattrak.objects.AbstractSatellite;
 import jsattrak.objects.CustomSatellite;
 import jsattrak.objects.GroundStation;
+import jsattrak.objects.SatelliteTleSGP4;
 import jsattrak.utilities.ECEFModelRenderable;
 import jsattrak.utilities.OrbitModelRenderable;
+import jsattrak.utilities.TLE;
 import name.gano.astro.time.Time;
 import name.gano.worldwind.layers.Earth.CoverageRenderableLayer;
 import name.gano.worldwind.layers.Earth.ECEFRenderableLayer;
@@ -72,23 +74,23 @@ public class test extends ApplicationTemplate
 //                                         500000)));
 //                }
                 
-                Model model3DS = ModelFactory.createModel("test/data/globalstar/Globalstar.3ds");
-                model3DS.setUseLighting(false); // turn off lighting!
-//                for (int i=0; i<100; i++) {
-//                    layer.addModel(new WWModel3D(model3DS,
-//                            new Position(Angle.fromDegrees(generator.nextInt()%80),
-//                                         Angle.fromDegrees(generator.nextInt()%180),
-//                                         750000)));
-//                }
-                
-                WWModel3D_new model3D = new WWModel3D_new(model3DS,
-                            new Position(Angle.fromDegrees(0),
-                                         Angle.fromDegrees(0),
-                                         750000));
-                model3D.setMaitainConstantSize(true);
-                model3D.setSize(300000);
-                
-                layer.addModel(model3D);
+//                Model model3DS = ModelFactory.createModel("test/data/globalstar/Globalstar.3ds");
+//                model3DS.setUseLighting(false); // turn off lighting!
+////                for (int i=0; i<100; i++) {
+////                    layer.addModel(new WWModel3D(model3DS,
+////                            new Position(Angle.fromDegrees(generator.nextInt()%80),
+////                                         Angle.fromDegrees(generator.nextInt()%180),
+////                                         750000)));
+////                }
+//                
+//                WWModel3D_new model3D = new WWModel3D_new(model3DS,
+//                            new Position(Angle.fromDegrees(0),
+//                                         Angle.fromDegrees(0),
+//                                         750000));
+//                model3D.setMaitainConstantSize(true);
+//                model3D.setSize(300000);
+//                
+//                layer.addModel(model3D);
                 // hastable to store all the Ground Stations
      Hashtable<String,GroundStation> gsHash = new Hashtable<String,GroundStation>();
                 
@@ -105,7 +107,35 @@ public class test extends ApplicationTemplate
      
      
                 Hashtable<String, AbstractSatellite> satHash = new Hashtable<String, AbstractSatellite>();
-                 CustomSatellite prop = new CustomSatellite("poot",new Time());
+                 //CustomSatellite prop = new CustomSatellite("poot",new Time());
+                 
+                 
+                 
+                 TLE newTLE = new TLE("ISS","1 25544U 98067A   09160.12255947  .00017740  00000-0  12823-3 0    24","2 25544  51.6405 348.2892 0009223  92.2562   9.3141 15.73542580604683");
+
+        // Julian Date we are interested in
+        double julianDate = 2454992.0; // 09 Jun 2009 12:00:00.000 UTC
+
+        // Create SGP4 satelite propogator
+        AbstractSatellite prop = null;
+        try
+        {
+            prop = new CustomSatellite(newTLE.getSatName(), new Time());
+            prop.propogate2JulDate(julianDate);
+            prop.setShowGroundTrack(true); // if we arn't using the JSatTrak plots midas well turn this off to save CPU time
+        }
+        catch(Exception e)
+        {
+            System.out.println("Error Creating SGP4 Satellite");
+            System.exit(1);
+        }
+
+        // prop to the desired time
+        prop.propogate2JulDate(julianDate);
+
+                 
+                 
+                 
                  prop.setShow3DOrbitTrace(true);
                  // display settings for the ISS
                  prop.setShow3D(true);
@@ -118,7 +148,7 @@ prop.setGrnTrkPointsPerPeriod(131); //  smoother line than the 81 default
 prop.setGroundTrackIni2False(); // flag so satellite recalculates ground track now (not later)
 
 // set default 3d model and turn on the use of 3d models
-prop.setThreeDModelPath("isscomplete/iss_complete.3ds");
+prop.setThreeDModelPath("/isscomplete/iss_complete.3ds");
 prop.setUse3dModel(true);
                  satHash.put("poot", prop);
                 double currentMJD;
