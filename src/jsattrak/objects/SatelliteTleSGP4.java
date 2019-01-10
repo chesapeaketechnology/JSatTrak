@@ -135,7 +135,7 @@ public class SatelliteTleSGP4 extends AbstractSatellite
 
         // options - hard coded
         char opsmode = SGP4utils.OPSMODE_IMPROVED; // OPSMODE_IMPROVED
-        SGP4unit.Gravconsttype gravconsttype = SGP4unit.Gravconsttype.wgs72;
+        SGP4unit.Gravconsttype gravconsttype = SGP4unit.Gravconsttype.wgs84;
 
         // load TLE data as strings and INI all SGP4 data
         boolean loadSuccess = SGP4utils.readTLEandIniSGP4(name, tleLine1, tleLine2, opsmode, gravconsttype, sgp4SatData);
@@ -162,7 +162,7 @@ public class SatelliteTleSGP4 extends AbstractSatellite
         // read TLE
         // options - hard coded
         char opsmode = SGP4utils.OPSMODE_IMPROVED; // OPSMODE_IMPROVED
-        SGP4unit.Gravconsttype gravconsttype = SGP4unit.Gravconsttype.wgs72;
+        SGP4unit.Gravconsttype gravconsttype = SGP4unit.Gravconsttype.wgs84;
 
         // load TLE data as strings and INI all SGP4 data
         boolean loadSuccess = SGP4utils.readTLEandIniSGP4(tle.getSatName(), tle.getLine1(), tle.getLine2(), opsmode, gravconsttype, sgp4SatData);
