@@ -87,13 +87,19 @@ public class CoverageAnalyzer implements JSatTrakRenderable,JSatTrakTimeDependen
     private // pixels below bar where text is displayed
     Color colorbarBGcolor = new Color(255, 255, 255, 180);
     private Color colorBarTextcolor = Color.BLACK;
+    private boolean heatmapMode = true;
     
     // default constructor
     public CoverageAnalyzer()
     {
         iniParamters();
     } // constructor
-    
+
+    public void setHeatmapMode(boolean heatmapMode)
+    {
+        this.heatmapMode = heatmapMode;
+    }
+
     /**
      * Constructor with current time - this will allow coverage to start on next time step
      * @param currentJulianDate current Julian Date
@@ -450,8 +456,10 @@ public class CoverageAnalyzer implements JSatTrakRenderable,JSatTrakTimeDependen
         {
             for(int j=0;j<longPanels;j++)
             {
-                // DEBUG CLEAR VALUE SO ONLY POINTS CURRENTLY IN VIEW SHOW UP
-                //coverageCumTime[i][j] = 0;
+                if (!heatmapMode)
+                {
+                    coverageCumTime[i][j] = 0;
+                }
                 
                 if(tempAcessArray[i][j])
                 {

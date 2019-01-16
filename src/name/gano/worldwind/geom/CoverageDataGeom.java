@@ -28,21 +28,24 @@ import gov.nasa.worldwind.util.Logging;
 import java.awt.Color;
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
+
+import gov.nasa.worldwindx.examples.analytics.AnalyticSurface;
 import jsattrak.coverage.CoverageAnalyzer;
+
+import static gov.nasa.worldwind.WorldWind.CLAMP_TO_GROUND;
 
 /**
  *
  * @author sgano
  */
-public class CoverageDataGeom implements Renderable 
+public class CoverageDataGeom extends AnalyticSurface
 {
-    
-//    Globe globe;
-    CoverageAnalyzer ca;
+    private CoverageAnalyzer ca;
     
     public CoverageDataGeom(CoverageAnalyzer ca)
     {
         this.ca = ca;
+        setAltitudeMode(CLAMP_TO_GROUND);
     }
     
     
