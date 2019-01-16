@@ -146,7 +146,7 @@ public class ECIRenderableLayer extends RenderableLayer
         {
              if(renderable instanceof OrbitModelRenderable)
              {
-                 ((OrbitModelRenderable)renderable).updateMJD(currentMJD, rotateECIdeg);
+                 ((OrbitModelRenderable)renderable).updateMJD(rotateECIdeg);
              }//OrbitModelRenderable
          } // for renderables
         
