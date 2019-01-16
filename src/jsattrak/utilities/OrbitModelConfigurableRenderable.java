@@ -7,7 +7,7 @@ import java.util.Hashtable;
 import java.util.Map;
 
 /**
- * Create a more configurable variant of the {@link OrbitModelRenderable}.
+ * Defines a more configurable variant of the {@link OrbitModelRenderable}.
  *
  * @author Proprietary information subject to the terms of a Non-Disclosure Agreement
  * @since CTI-1.0.0
@@ -22,7 +22,15 @@ public class OrbitModelConfigurableRenderable extends OrbitModelRenderable
     private final Map<OrbitModelRenderConfig, Boolean> orbitModelRenderingConfiguration;
 
     /**
-     * Creates a new instance of OrbitModel
+     * Creates a new instance of OrbitModelConfigurableRenderable which is no different than
+     * {@link OrbitModelRenderable} except that it contains a configuration map which
+     * allows for multiple instances of it to be created using the same list of
+     * satellites as the underlying data set, but then each renderable can render that
+     * same set of satellites in a different way. For example, if you want two layers,
+     * one with just the orbit path and one with just the 3D coverage "cone", previously
+     * you would have had to create two {@link Hashtable}s of the {@link AbstractSatellite}s
+     * of interest, then for one you set them to only render the orbit model and for the
+     * other you set them to only render the cone.
      *
      * @param includedSatellites hashtable of satellites to include in the rendering
      * @param globe              on which to render the satellite renderables

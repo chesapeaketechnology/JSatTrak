@@ -15,7 +15,7 @@ import java.awt.Color;
 import java.util.Hashtable;
 
 /**
- * Abstract base class for common aspects of rederables for the various orbit models
+ * Abstract base class for common aspects of renderables for the various orbit models
  *
  * @author Proprietary information subject to the terms of a Non-Disclosure Agreement
  * @since CTI-1.0.0
@@ -58,16 +58,16 @@ public abstract class AModelRenderable implements Renderable
         this(satelliteHashtable, groundStationHashtable, globe, RenderableIconType.SPHERE);
     }
 
-    protected GL2 initializeGL2ForDrawContext(DrawContext dc) throws IllegalArgumentException
+    protected GL2 initializeGL2ForDrawContext(DrawContext drawContext) throws IllegalArgumentException
     {
-        if (dc == null)
+        if (drawContext == null)
         {
             String msg = Logging.getMessage("nullValue.DrawContextIsNull");
             Logging.logger().severe(msg);
             throw new IllegalArgumentException(msg);
         }
 
-        javax.media.opengl.GL2 gl = dc.getGL().getGL2();
+        javax.media.opengl.GL2 gl = drawContext.getGL().getGL2();
 
         //gl.glEnable(GL.GL_TEXTURE_2D); // removed so the sun shading wouldn't effect line colors
         gl.glPushAttrib(javax.media.opengl.GL2.GL_TEXTURE_BIT | javax.media.opengl.GL2.GL_ENABLE_BIT | javax.media.opengl.GL2.GL_CURRENT_BIT);
