@@ -43,6 +43,8 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Point;
 import java.util.Hashtable;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
  * @author Shawn E. Gano
@@ -72,7 +74,10 @@ public class OrbitModelRenderable extends AModelRenderable
         GL2 gl = initializeGL2ForDrawContext(dc);
 
         // for each satellite
-        for (AbstractSatellite satellite : satelliteHashtable.values()) // search through all sat nodes
+
+        Set<AbstractSatellite> satellitesToRender = new CopyOnWriteArraySet<AbstractSatellite>(satelliteHashtable.values());
+
+        for (AbstractSatellite satellite : satellitesToRender) // search through all sat nodes
         {
             // set color
             Color satelliteColor = satellite.getSatColor();

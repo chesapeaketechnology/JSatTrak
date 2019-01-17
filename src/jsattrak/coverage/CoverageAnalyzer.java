@@ -30,7 +30,10 @@ import java.awt.Graphics2D;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Hashtable;
+import java.util.Set;
 import java.util.Vector;
+import java.util.concurrent.CopyOnWriteArraySet;
+
 import jsattrak.gui.J2dEarthLabel2;
 import jsattrak.objects.AbstractSatellite;
 import jsattrak.objects.GroundStation;
@@ -61,7 +64,7 @@ public class CoverageAnalyzer implements JSatTrakRenderable,JSatTrakTimeDependen
     
     private double lastMJD = -1; // last MJD update time
     
-    Vector<String> satsUsedInCoverage = new Vector<String>(); // vector of satellites used in Coverage anaylsis
+    Set<String> satsUsedInCoverage = new CopyOnWriteArraySet<String>(); // vector of satellites used in Coverage anaylsis
     
     // settings ===========
     // grid sizing >=1
@@ -593,15 +596,6 @@ public class CoverageAnalyzer implements JSatTrakRenderable,JSatTrakTimeDependen
     
     public void addSatToCoverageAnaylsis(String satName)
     {
-        // first check to make sure sat isn't already in list
-        for(String name : satsUsedInCoverage)
-        {
-            if(satName.equalsIgnoreCase(name))
-            {
-                return; // already in the list
-            }
-        }
-        
         satsUsedInCoverage.add(satName);
     } // addSatToCoverageAnaylsis
     
@@ -612,22 +606,12 @@ public class CoverageAnalyzer implements JSatTrakRenderable,JSatTrakTimeDependen
     
     public void removeSatFromCoverageAnaylsis(String satName)
     {
-        // make sure name is in the Vector
-        int i=0; // counter
-        for(String name : satsUsedInCoverage)
-        {
-            if(satName.equalsIgnoreCase(name))
-            {
-                satsUsedInCoverage.remove(i);
-                return; // already in the list
-            }
-            i++;
-        }
+        satsUsedInCoverage.remove(satName);
     } // removeSatFromCoverageAnaylsis
     
     public Vector<String> getSatVector()
     {
-        return satsUsedInCoverage;
+        return new Vector<String>(satsUsedInCoverage);
     }
     
     // ======================================================
