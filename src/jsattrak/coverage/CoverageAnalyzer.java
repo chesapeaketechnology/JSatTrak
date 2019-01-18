@@ -63,8 +63,14 @@ public class CoverageAnalyzer implements JSatTrakRenderable,JSatTrakTimeDependen
     ColorMap colorMap = new ColorMap();
     
     private double lastMJD = -1; // last MJD update time
-    
-    Set<String> satsUsedInCoverage = new CopyOnWriteArraySet<String>(); // vector of satellites used in Coverage anaylsis
+
+    /**
+     *  thread safe set of satellites used in Coverage analysis
+     *  when rendering, we are provided a set of satellites, we iterate through the list and check the satellite
+     *  names against this list, if the satellite is not included in this list, it is not included in
+     *  the coverage analysis
+     */
+    private Set<String> satsUsedInCoverage = new CopyOnWriteArraySet<String>();
     
     // settings ===========
     // grid sizing >=1
