@@ -43,31 +43,52 @@ public class OrbitModelConfigurableRenderable extends OrbitModelRenderable
         this.orbitModelRenderingConfiguration = orbitModelRenderingConfiguration;
     }
 
+    /**
+     * The {@link Map} {@code getOrDefault} API isn't available until JDK 8 and this
+     * requires JDK6 level of support, so recreate the capability with this helper
+     * method.
+     *
+     * @param key          the configuration key requested
+     * @param defaultValue the default value if the configuration map doesn't contain that key
+     * @return a boolean from the  configuration for the  given key or else a provided
+     * default value
+     */
+    private boolean getConfigBooleanOrDefault(OrbitModelRenderConfig key, boolean defaultValue)
+    {
+        boolean configSetting = defaultValue;
+        if (orbitModelRenderingConfiguration.containsKey(key))
+        {
+            configSetting = orbitModelRenderingConfiguration.get(key);
+        }
+        return configSetting;
+    }
+
+
     @Override
     protected boolean shouldRenderLeadingOrbit(AbstractSatellite satellite)
     {
-        boolean configSetting = orbitModelRenderingConfiguration.getOrDefault(OrbitModelRenderConfig.LEADING_ORBIT, true);
+        boolean configSetting = getConfigBooleanOrDefault(OrbitModelRenderConfig.LEADING_ORBIT, true);
         return configSetting && super.shouldRenderLeadingOrbit(satellite);
     }
 
     @Override
     protected boolean shouldRenderLaggingOrbit(AbstractSatellite satellite)
     {
-        boolean configSetting = orbitModelRenderingConfiguration.getOrDefault(OrbitModelRenderConfig.LAGGING_ORBIT, true);
+        boolean configSetting = getConfigBooleanOrDefault(OrbitModelRenderConfig.LAGGING_ORBIT, true);
         return configSetting && super.shouldRenderLaggingOrbit(satellite);
     }
 
     @Override
     protected boolean shouldRender3dName(AbstractSatellite satellite)
     {
-        boolean configSetting = orbitModelRenderingConfiguration.getOrDefault(OrbitModelRenderConfig.SATELLITE_NAME_3D, true);
+        boolean configSetting = getConfigBooleanOrDefault(OrbitModelRenderConfig.SATELLITE_NAME_3D, true);
         return configSetting && super.shouldRender3dName(satellite);
     }
 
     @Override
     protected boolean shouldRender3dFootprint(AbstractSatellite satellite)
     {
-        boolean configSetting = orbitModelRenderingConfiguration.getOrDefault(OrbitModelRenderConfig.COVERAGE_FOOTPRINT_3D, true);
+        boolean configSetting = getConfigBooleanOrDefault(OrbitModelRenderConfig.COVERAGE_FOOTPRINT_3D, true);
         return configSetting && super.shouldRender3dFootprint(satellite);
     }
 }

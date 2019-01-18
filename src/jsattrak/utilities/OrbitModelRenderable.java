@@ -65,12 +65,14 @@ public class OrbitModelRenderable extends AModelRenderable
     {
         // <> not supported in JDK 1.6
         super(satHash, new Hashtable<String, GroundStation>(), globe);
+
+        Color coneColor = Color.GREEN;
+        coverage3dCone = new Cone(globe, 45, -90, 1000000, 2000000, Angle.fromDegrees(0), Angle.fromDegrees(-90), coneColor);
     }
 
     @Override
     public void render(DrawContext dc)
     {
-
         GL2 gl = initializeGL2ForDrawContext(dc);
 
         // for each satellite
@@ -81,7 +83,7 @@ public class OrbitModelRenderable extends AModelRenderable
         {
             // set color
             Color satelliteColor = satellite.getSatColor();
-            setGlColor(gl, satelliteColor);
+            gl.glColor3f(satelliteColor.getRed() / 255.0f, satelliteColor.getGreen() / 255.0f, satelliteColor.getBlue() / 255.0f);
 
             if (shouldRenderLaggingOrbit(satellite))
             {
@@ -120,7 +122,7 @@ public class OrbitModelRenderable extends AModelRenderable
     protected void render3dFootprint(DrawContext dc, AbstractSatellite satellite)
     {
         Color satelliteColor = satellite.getSatColor();
-        double [] xyz = satellite.getTEMEPos();
+        double[] xyz = satellite.getTEMEPos();
         double[] lla = satellite.getLLA();
         if (lla != null && xyz != null && xyz.length >= 3)
         {
@@ -130,16 +132,16 @@ public class OrbitModelRenderable extends AModelRenderable
 //                    surfCirc.setPaint(new Color(satColor.getRed(), satColor.getGreen(), satColor.getBlue(), circleViewTransparency)); // sets interior color
 //                    surfCirc.render(dc);
 
-            if (coverage3dCone == null)
-            {
-                Color coneColor = new Color(satelliteColor.getRed(), satelliteColor.getGreen(), satelliteColor.getBlue(), getFillTransparency());
-                coverage3dCone = new Cone(globe, 45, -90, 1000000, 2000000, Angle.fromDegrees(0), Angle.fromDegrees(-90), coneColor);
-            }
             // test cone
             //cone.setLatLonRadians( lla[0] , lla[1], lla[2] );
+            if (coverage3dCone == null)
+            {
+                coverage3dCone = new Cone(globe, 45, -90, 1000000, 2000000, Angle.fromDegrees(0), Angle.fromDegrees(-90), satelliteColor);
+            }
             coverage3dCone.setVertexPosition(-xyz[0], xyz[2], xyz[1]);
             double[] rh = calcConeRadiusHeightFromAlt(lla[2]);
             coverage3dCone.setGroundRange(rh[0]);
+            coverage3dCone.setColor(satelliteColor);
             coverage3dCone.setHeight(rh[1] * CONE_HEIGHT_SCALING_FACTOR); // minus a little because of rendering artifacts
             coverage3dCone.render(dc);
         }

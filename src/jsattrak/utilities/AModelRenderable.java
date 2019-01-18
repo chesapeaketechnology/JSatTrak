@@ -97,9 +97,4 @@ public abstract class AModelRenderable implements Renderable
         }
         this.fillTransparency = fillTransparency;
     }
-
-    protected void setGlColor (GL2 gl, Color color)
-    {
-        gl.glColor3f(color.getRed() / 255.0f, color.getGreen() / 255.0f, color.getBlue() / 255.0f);
-    }
 }
