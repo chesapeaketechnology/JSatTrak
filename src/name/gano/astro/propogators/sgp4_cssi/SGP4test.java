@@ -39,7 +39,7 @@ public class SGP4test
 
         // options
         char opsmode = SGP4utils.OPSMODE_IMPROVED; // OPSMODE_IMPROVED
-        SGP4unit.Gravconsttype gravconsttype = SGP4unit.Gravconsttype.wgs72;
+        SGP4unit.Gravconsttype gravconsttype = SGP4unit.Gravconsttype.wgs84;
 
         // read in data and ini SGP4 data
         boolean result1 = SGP4utils.readTLEandIniSGP4(name, line1, line2, opsmode, gravconsttype, data);

@@ -6,7 +6,9 @@ All Rights Reserved.
 */
 package gov.nasa.worldwind.layers.Mercator.examples;
 
-import com.sun.opengl.util.texture.*;
+import com.jogamp.opengl.util.texture.Texture;
+import com.jogamp.opengl.util.texture.TextureCoords;
+import com.jogamp.opengl.util.texture.TextureIO;
 import gov.nasa.worldwind.exception.WWRuntimeException;
 import gov.nasa.worldwind.geom.Vec4;
 import gov.nasa.worldwind.render.*;
@@ -15,6 +17,7 @@ import gov.nasa.worldwind.util.Logging;
 import javax.media.opengl.GL;
 import java.awt.*;
 import java.io.*;
+import javax.media.opengl.GL2;
 
 public class VirtualEarthLogo implements OrderedRenderable
 {
@@ -63,7 +66,7 @@ public class VirtualEarthLogo implements OrderedRenderable
 		if (this.iconFilePath == null)
 			return;
 
-		GL gl = dc.getGL();
+		GL2 gl = dc.getGL().getGL2();
 
 		boolean attribsPushed = false;
 		boolean modelviewPushed = false;
@@ -71,18 +74,18 @@ public class VirtualEarthLogo implements OrderedRenderable
 
 		try
 		{
-			gl.glPushAttrib(GL.GL_DEPTH_BUFFER_BIT | GL.GL_COLOR_BUFFER_BIT
-					| GL.GL_ENABLE_BIT | GL.GL_TEXTURE_BIT
-					| GL.GL_TRANSFORM_BIT | GL.GL_VIEWPORT_BIT
-					| GL.GL_CURRENT_BIT);
+			gl.glPushAttrib(GL2.GL_DEPTH_BUFFER_BIT | GL2.GL_COLOR_BUFFER_BIT
+					| GL2.GL_ENABLE_BIT | GL2.GL_TEXTURE_BIT
+					| GL2.GL_TRANSFORM_BIT | GL2.GL_VIEWPORT_BIT
+					| GL2.GL_CURRENT_BIT);
 			attribsPushed = true;
 
 			// Initialize texture if not done yet
-			Texture iconTexture = dc.getTextureCache().get(this);
+			Texture iconTexture = (Texture) dc.getTextureCache().get(this);
 			if (iconTexture == null)
 			{
 				this.initializeTexture(dc);
-				iconTexture = dc.getTextureCache().get(this);
+				iconTexture = (Texture) dc.getTextureCache().get(this);
 				if (iconTexture == null)
 				{
 					// TODO: log warning
@@ -100,7 +103,7 @@ public class VirtualEarthLogo implements OrderedRenderable
 			// Load a parallel projection with xy dimensions (viewportWidth, viewportHeight)
 			// into the GL projection matrix.
 			java.awt.Rectangle viewport = dc.getView().getViewport();
-			gl.glMatrixMode(javax.media.opengl.GL.GL_PROJECTION);
+			gl.glMatrixMode(javax.media.opengl.GL2.GL_PROJECTION);
 			gl.glPushMatrix();
 			projectionPushed = true;
 			gl.glLoadIdentity();
@@ -108,7 +111,7 @@ public class VirtualEarthLogo implements OrderedRenderable
 			gl.glOrtho(0d, viewport.width, 0d, viewport.height, -0.6 * maxwh,
 					0.6 * maxwh);
 
-			gl.glMatrixMode(GL.GL_MODELVIEW);
+			gl.glMatrixMode(GL2.GL_MODELVIEW);
 			gl.glPushMatrix();
 			modelviewPushed = true;
 			gl.glLoadIdentity();
@@ -126,7 +129,7 @@ public class VirtualEarthLogo implements OrderedRenderable
 				// Draw world map icon
 				gl.glColor4d(1d, 1d, 1d, this.getOpacity());
 				gl.glEnable(GL.GL_TEXTURE_2D);
-				iconTexture.bind();
+				iconTexture.bind(gl);
 
 				TextureCoords texCoords = iconTexture.getImageTexCoords();
 				dc.drawUnitQuad(texCoords);
@@ -136,12 +139,12 @@ public class VirtualEarthLogo implements OrderedRenderable
 		{
 			if (projectionPushed)
 			{
-				gl.glMatrixMode(GL.GL_PROJECTION);
+				gl.glMatrixMode(GL2.GL_PROJECTION);
 				gl.glPopMatrix();
 			}
 			if (modelviewPushed)
 			{
-				gl.glMatrixMode(GL.GL_MODELVIEW);
+				gl.glMatrixMode(GL2.GL_MODELVIEW);
 				gl.glPopMatrix();
 			}
 			if (attribsPushed)
@@ -151,7 +154,7 @@ public class VirtualEarthLogo implements OrderedRenderable
 
 	private void initializeTexture(DrawContext dc)
 	{
-		Texture iconTexture = dc.getTextureCache().get(this);
+		Texture iconTexture = (Texture) dc.getTextureCache().get(this);
 		if (iconTexture != null)
 			return;
 
@@ -169,7 +172,7 @@ public class VirtualEarthLogo implements OrderedRenderable
 			}
 
 			iconTexture = TextureIO.newTexture(iconStream, true, null);
-			iconTexture.bind();
+			iconTexture.bind(dc.getGL().getGL2());
 			this.iconWidth = iconTexture.getWidth();
 			this.iconHeight = iconTexture.getHeight();
 			dc.getTextureCache().put(this, iconTexture);
@@ -182,16 +185,16 @@ public class VirtualEarthLogo implements OrderedRenderable
 			throw new WWRuntimeException(msg, e);
 		}
 
-		GL gl = dc.getGL();
-		gl.glTexEnvf(GL.GL_TEXTURE_ENV, GL.GL_TEXTURE_ENV_MODE, GL.GL_MODULATE);
-		gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER,
-				GL.GL_LINEAR_MIPMAP_LINEAR);
-		gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER,
-				GL.GL_LINEAR);
-		gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_S,
-				GL.GL_CLAMP_TO_EDGE);
-		gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_T,
-				GL.GL_CLAMP_TO_EDGE);
+		GL2 gl = dc.getGL().getGL2();
+		gl.glTexEnvf(GL2.GL_TEXTURE_ENV, GL2.GL_TEXTURE_ENV_MODE, GL2.GL_MODULATE);
+		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MIN_FILTER,
+				GL2.GL_LINEAR_MIPMAP_LINEAR);
+		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MAG_FILTER,
+				GL2.GL_LINEAR);
+		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_WRAP_S,
+				GL2.GL_CLAMP_TO_EDGE);
+		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_WRAP_T,
+				GL2.GL_CLAMP_TO_EDGE);
 		// Enable texture anisotropy, improves "tilted" world map quality.
 		/*int[] maxAnisotropy = new int[1];
 		gl

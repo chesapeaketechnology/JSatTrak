@@ -32,19 +32,19 @@ import gov.nasa.worldwind.awt.AWTInputHandler;
 import gov.nasa.worldwind.awt.WorldWindowGLJPanel;
 import gov.nasa.worldwind.event.PositionEvent;
 import gov.nasa.worldwind.event.PositionListener;
-import gov.nasa.worldwind.examples.WMSLayersPanel;
-import gov.nasa.worldwind.examples.sunlight.AtmosphereLayer;
-import gov.nasa.worldwind.examples.sunlight.LensFlareLayer;
-import gov.nasa.worldwind.examples.sunlight.RectangularNormalTessellator;
-import gov.nasa.worldwind.examples.sunlight.SunPositionProvider;
+import gov.nasa.worldwindx.examples.WMSLayersPanel;
+//import gov.nasa.worldwind.examples.sunlight.AtmosphereLayer;
+//import gov.nasa.worldwind.examples.sunlight.LensFlareLayer;
+//import gov.nasa.worldwind.examples.sunlight.RectangularNormalTessellator;
+//import gov.nasa.worldwind.examples.sunlight.SunPositionProvider;
 import gov.nasa.worldwind.geom.Angle;
 import gov.nasa.worldwind.geom.LatLon;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.geom.Vec4;
 import gov.nasa.worldwind.layers.CompassLayer;
 import gov.nasa.worldwind.layers.Earth.CountryBoundariesLayer;
-import gov.nasa.worldwind.layers.Earth.LandsatI3;
-import gov.nasa.worldwind.layers.Earth.USGSTopographicMaps;
+import gov.nasa.worldwind.layers.Earth.LandsatI3WMSLayer;
+import gov.nasa.worldwind.layers.Earth.USGSTopoMedRes;
 import gov.nasa.worldwind.layers.Earth.USGSUrbanAreaOrtho;
 import gov.nasa.worldwind.layers.Layer;
 import gov.nasa.worldwind.layers.LayerList;
@@ -64,7 +64,7 @@ import gov.nasa.worldwind.layers.WorldMapLayer;
 import gov.nasa.worldwind.layers.placename.PlaceNameLayer;
 import gov.nasa.worldwind.render.Polyline;
 import gov.nasa.worldwind.util.StatusBar;
-import gov.nasa.worldwind.view.BasicOrbitView;
+import gov.nasa.worldwind.view.orbit.BasicOrbitView;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
@@ -114,7 +114,7 @@ import name.gano.worldwind.layers.Earth.EcefTimeDepRenderableLayer;
 import name.gano.worldwind.sunshader.CustomSunPositionProvider;
 import name.gano.worldwind.view.AutoClipBasicOrbitView;
 import name.gano.worldwind.view.BasicModelView3;
-import name.gano.worldwind.view.BasicModelViewInputHandler3;
+
 
 /**
  *
@@ -172,10 +172,10 @@ public class J3DEarthInternalPanel extends javax.swing.JPanel implements J3DEart
     ViewControlsLayer viewControlsLayer;
 
     // sun shader
-    private RectangularNormalTessellator tessellator;
-    private LensFlareLayer lensFlareLayer;
-    private AtmosphereLayer atmosphereLayer;
-    private SunPositionProvider spp;
+//    private RectangularNormalTessellator tessellator;
+//    private LensFlareLayer lensFlareLayer;
+//    private AtmosphereLayer atmosphereLayer;
+//    private SunPositionProvider spp;
     private boolean sunShadingOn = false; // controls if sun shading is used
 
      // ECI grid
@@ -206,7 +206,7 @@ public class J3DEarthInternalPanel extends javax.swing.JPanel implements J3DEart
 
         // Use normal/shading tessellator
         // sun shading needs this
-        Configuration.setValue(AVKey.TESSELLATOR_CLASS_NAME, RectangularNormalTessellator.class.getName());
+//        Configuration.setValue(AVKey.TESSELLATOR_CLASS_NAME, RectangularNormalTessellator.class.getName());
 
         // make a new instace from the shared wwj resource!
         wwd = new WorldWindowGLJPanel(app.getWwd());
@@ -260,13 +260,14 @@ public class J3DEarthInternalPanel extends javax.swing.JPanel implements J3DEart
         this.getWwd().addSelectListener(new ViewControlsSelectListener(wwd, viewControlsLayer));
        
         // set default layer visabiliy
-        for (Layer layer : m.getLayers())
+       for (Layer layer : m.getLayers())
         {
             if (layer instanceof TiledImageLayer)
             {
-                ((TiledImageLayer) layer).setShowImageTileOutlines(false);
+                ((TiledImageLayer) layer).setDrawTileBoundaries(false);
+                
             }
-            if (layer instanceof LandsatI3)
+            if (layer instanceof LandsatI3WMSLayer)
             {
                 ((TiledImageLayer) layer).setDrawBoundingVolumes(false);
                 ((TiledImageLayer) layer).setEnabled(false);
@@ -294,7 +295,7 @@ public class J3DEarthInternalPanel extends javax.swing.JPanel implements J3DEart
                 starsLayer = (StarsLayer) layer;
                 
                 // for now just enlarge radius by a factor of 10
-                starsLayer.setRadius(starsLayer.getRadius()*10.0);
+//                starsLayer.setRadius(starsLayer.getRadius()*10.0);
             }
             if(layer instanceof CountryBoundariesLayer)
             {
@@ -306,7 +307,7 @@ public class J3DEarthInternalPanel extends javax.swing.JPanel implements J3DEart
         wwd.setModel(m);
 
         // add USGS topo layer
-        USGSTopographicMaps topo = new USGSTopographicMaps();
+        USGSTopoMedRes topo = new USGSTopoMedRes();
         topo.setEnabled(false);
         WwjUtils.insertBeforePlacenames(getWwd(), topo);
         
@@ -366,21 +367,21 @@ public class J3DEarthInternalPanel extends javax.swing.JPanel implements J3DEart
          // SUN SHADING -------------
 
         // set the sun provider to the shader
-        spp = new CustomSunPositionProvider(app.getSun());
-
-        // Replace sky gradient with this atmosphere layer when using sun shading
-        this.atmosphereLayer = new AtmosphereLayer();
-
-        // Add lens flare layer
-        this.lensFlareLayer = LensFlareLayer.getPresetInstance(LensFlareLayer.PRESET_BOLD);
-        this.getWwd().getModel().getLayers().add(this.lensFlareLayer);
-
-        // Get tessellator
-        this.tessellator = (RectangularNormalTessellator)getWwd().getModel().getGlobe().getTessellator();
-        // set default colors for shading
-        //this.tessellator.setLightColor(Color.WHITE); //this.colorButton.getBackground());
-        //this.tessellator.setAmbientColor(Color.BLACK); //this.ambientButton.getBackground());
-        this.tessellator.setAmbientColor(new Color(0.50f, 0.50f, 0.50f));
+//        spp = new CustomSunPositionProvider(app.getSun());
+//
+//        // Replace sky gradient with this atmosphere layer when using sun shading
+//        this.atmosphereLayer = new AtmosphereLayer();
+//
+//        // Add lens flare layer
+//        this.lensFlareLayer = LensFlareLayer.getPresetInstance(LensFlareLayer.PRESET_BOLD);
+//        this.getWwd().getModel().getLayers().add(this.lensFlareLayer);
+//
+//        // Get tessellator
+//        this.tessellator = (RectangularNormalTessellator)getWwd().getModel().getGlobe().getTessellator();
+//        // set default colors for shading
+//        //this.tessellator.setLightColor(Color.WHITE); //this.colorButton.getBackground());
+//        //this.tessellator.setAmbientColor(Color.BLACK); //this.ambientButton.getBackground());
+//        this.tessellator.setAmbientColor(new Color(0.50f, 0.50f, 0.50f));
 
         // Add position listener to update light direction relative to the eye
         getWwd().addPositionListener(new PositionListener()
@@ -408,68 +409,68 @@ public class J3DEarthInternalPanel extends javax.swing.JPanel implements J3DEart
     // Update worldwind wun shading
     private void update(boolean redraw)
     {
-        if(sunShadingOn) //this.enableCheckBox.isSelected())
-        {
-            // Compute Sun position according to current date and time
-            LatLon sunPos = spp.getPosition();
-            Vec4 sun = getWwd().getModel().getGlobe().computePointFromPosition(new Position(sunPos, 0)).normalize3();
-
-            Vec4 light = sun.getNegative3();
-            this.tessellator.setLightDirection(light);
-            this.lensFlareLayer.setSunDirection(sun);
-            this.atmosphereLayer.setSunDirection(sun);
-
-            // Redraw if needed
-            if(redraw)
-            {
-                this.getWwd().redraw();
-            }
-        } // if sun Shading
+//        if(sunShadingOn) //this.enableCheckBox.isSelected())
+//        {
+//            // Compute Sun position according to current date and time
+//            LatLon sunPos = spp.getPosition();
+//            Vec4 sun = getWwd().getModel().getGlobe().computePointFromPosition(new Position(sunPos, 0)).normalize3();
+//
+//            Vec4 light = sun.getNegative3();
+////            this.tessellator.setLightDirection(light);
+////            this.lensFlareLayer.setSunDirection(sun);
+////            this.atmosphereLayer.setSunDirection(sun);
+//
+//            // Redraw if needed
+//            if(redraw)
+//            {
+//                this.getWwd().redraw();
+//            }
+//        } // if sun Shading
 
     } // update - for sun shading
 
     public void setSunShadingOn(boolean useSunShading)
     {
-        if(useSunShading == sunShadingOn)
-        {
-            return; // nothing to do
-        }
-
-        sunShadingOn = useSunShading;
-
-        if(sunShadingOn)
-        {
-            // enable shading - use special atmosphere
-            for(int i = 0; i < this.getWwd().getModel().getLayers().size(); i++)
-            {
-                Layer l = this.getWwd().getModel().getLayers().get(i);
-                if(l instanceof SkyGradientLayer)
-                {
-                    this.getWwd().getModel().getLayers().set(i, this.atmosphereLayer);
-                }
-            }
-        }
-        else
-        {
-            // disable shading
-            // Turn off lighting
-            this.tessellator.setLightDirection(null);
-            this.lensFlareLayer.setSunDirection(null);
-            this.atmosphereLayer.setSunDirection(null);
-
-            // use standard atmosphere
-            for(int i = 0; i < this.getWwd().getModel().getLayers().size(); i++)
-            {
-                Layer l = this.getWwd().getModel().getLayers().get(i);
-                if(l instanceof AtmosphereLayer)
-                {
-                    this.getWwd().getModel().getLayers().set(i, new SkyGradientLayer());
-                }
-            }
-
-        } // if/else shading
-
-        this.update(true); // redraw
+//        if(useSunShading == sunShadingOn)
+//        {
+//            return; // nothing to do
+//        }
+//
+//        sunShadingOn = useSunShading;
+//
+//        if(sunShadingOn)
+//        {
+//            // enable shading - use special atmosphere
+//            for(int i = 0; i < this.getWwd().getModel().getLayers().size(); i++)
+//            {
+//                Layer l = this.getWwd().getModel().getLayers().get(i);
+//                if(l instanceof SkyGradientLayer)
+//                {
+//                    this.getWwd().getModel().getLayers().set(i, this.atmosphereLayer);
+//                }
+//            }
+//        }
+//        else
+//        {
+//            // disable shading
+//            // Turn off lighting
+//            this.tessellator.setLightDirection(null);
+//            this.lensFlareLayer.setSunDirection(null);
+//            this.atmosphereLayer.setSunDirection(null);
+//
+//            // use standard atmosphere
+//            for(int i = 0; i < this.getWwd().getModel().getLayers().size(); i++)
+//            {
+//                Layer l = this.getWwd().getModel().getLayers().get(i);
+//                if(l instanceof AtmosphereLayer)
+//                {
+//                    this.getWwd().getModel().getLayers().set(i, new SkyGradientLayer());
+//                }
+//            }
+//
+//        } // if/else shading
+//
+//        this.update(true); // redraw
     } // setSunShadingOn
 
     public boolean isSunShadingOn()
@@ -483,7 +484,7 @@ public class J3DEarthInternalPanel extends javax.swing.JPanel implements J3DEart
      */
     public void setAmbientLightLevel(int level)
     {
-        this.tessellator.setAmbientColor(new Color(level/100.0f,level/100.0f,level/100.0f) );
+        //this.tessellator.setAmbientColor(new Color(level/100.0f,level/100.0f,level/100.0f) );
 
         this.update(true);
     }
@@ -494,7 +495,7 @@ public class J3DEarthInternalPanel extends javax.swing.JPanel implements J3DEart
      */
     public int getAmbientLightLevel()
     {
-        return (int) Math.round( 100.0*this.tessellator.getAmbientColor().getRed()/255.0 );
+        return 50;
     }
 
     /**
@@ -503,7 +504,7 @@ public class J3DEarthInternalPanel extends javax.swing.JPanel implements J3DEart
      */
     public boolean isLensFlareEnabled()
     {
-        return lensFlareLayer.isEnabled();
+        return false;
     }
 
     /**
@@ -512,7 +513,7 @@ public class J3DEarthInternalPanel extends javax.swing.JPanel implements J3DEart
      */
     public void setLensFlare(boolean enabled)
     {
-        lensFlareLayer.setEnabled(enabled);
+        //lensFlareLayer.setEnabled(enabled);
     }
     
     private RenderableLayer createLatLongLinesLayer()
@@ -1093,7 +1094,7 @@ private void fullScreenButtonActionPerformed(java.awt.event.ActionEvent evt) {//
         
         if(this.isModelViewMode())
         {
-            wwd.getView().setNearClipDistance(modelViewNearClip);
+//            wwd.getView().setNearClipDistance(modelViewNearClip);
         }
     }
 
@@ -1108,7 +1109,7 @@ private void fullScreenButtonActionPerformed(java.awt.event.ActionEvent evt) {//
         
         if(this.isModelViewMode())
         {
-            wwd.getView().setFarClipDistance(modelViewFarClip);
+         //   wwd.getView().setFarClipDistance(modelViewFarClip);
         }
     }
     
@@ -1128,8 +1129,8 @@ private void fullScreenButtonActionPerformed(java.awt.event.ActionEvent evt) {//
             awth.setSmoothViewChanges(smoothViewChanges); // FALSE MAKES THE VIEW FAST!! -- MIGHT WANT TO MAKE IT GUI Chooseable
                         
             // IF EARTH VIEW -- RESET CLIPPING PLANES BACK TO NORMAL SETTINGS!!!
-            wwd.getView().setNearClipDistance(this.nearClippingPlaneDistOrbit);
-            wwd.getView().setFarClipDistance(this.farClippingPlaneDistOrbit);
+        //    wwd.getView().setNearClipDistance(this.nearClippingPlaneDistOrbit);
+          //  wwd.getView().setFarClipDistance(this.farClippingPlaneDistOrbit);
             
             // change class for inputHandler
             Configuration.setValue(AVKey.INPUT_HANDLER_CLASS_NAME, 
@@ -1156,47 +1157,47 @@ private void fullScreenButtonActionPerformed(java.awt.event.ActionEvent evt) {//
             BasicModelView3 bmv;
             if(wwd.getView() instanceof BasicOrbitView)
             {
-                bmv = new BasicModelView3(((BasicOrbitView)wwd.getView()).getOrbitViewModel(), sat);
+         //       bmv = new BasicModelView3(((BasicOrbitView)wwd.getView()), sat);
                 //bmv = new BasicModelView3(sat);
             }
             else
             {
-                bmv = new BasicModelView3(((BasicModelView3)wwd.getView()).getOrbitViewModel(), sat);
+ //               bmv = new BasicModelView3(((BasicModelView3)wwd.getView()).getOrbitViewModel(), sat);
             }
             
-            // remove the old hover listener -- depending on this instance of the input handler class type
-            if( wwd.getInputHandler() instanceof AWTInputHandler)
-            {
-                ((AWTInputHandler) wwd.getInputHandler()).removeHoverSelectListener();
-            }
-            else if( wwd.getInputHandler() instanceof BasicModelViewInputHandler3)
-            {
-                ((BasicModelViewInputHandler3) wwd.getInputHandler()).removeHoverSelectListener();
-            }
-            
-            // set view
-            wwd.setView(bmv);
-
-            // remove the rest of the old input handler
-            wwd.getInputHandler().setEventSource(null);
-             
-            // add new input handler
-            BasicModelViewInputHandler3 mih = new BasicModelViewInputHandler3();
-            mih.setEventSource(wwd);
-            wwd.setInputHandler(mih);
-            
-            // view smooth?
-            mih.setSmoothViewChanges(smoothViewChanges); // FALSE MAKES THE VIEW FAST!!
+//            // remove the old hover listener -- depending on this instance of the input handler class type
+//            if( wwd.getInputHandler() instanceof AWTInputHandler)
+//            {
+//                ((AWTInputHandler) wwd.getInputHandler()).removeHoverSelectListener();
+//            }
+//            else if( wwd.getInputHandler() instanceof BasicModelViewInputHandler3)
+//            {
+//                ((BasicModelViewInputHandler3) wwd.getInputHandler()).removeHoverSelectListener();
+//            }
+//            
+//            // set view
+//            wwd.setView(bmv);
+//
+//            // remove the rest of the old input handler
+//            wwd.getInputHandler().setEventSource(null);
+//             
+//            // add new input handler
+//            BasicModelViewInputHandler3 mih = new BasicModelViewInputHandler3();
+//            mih.setEventSource(wwd);
+//            wwd.setInputHandler(mih);
+//            
+//            // view smooth?
+//            mih.setSmoothViewChanges(smoothViewChanges); // FALSE MAKES THE VIEW FAST!!
 
             // settings for great closeups!
-            wwd.getView().setNearClipDistance(modelViewNearClip);
-            wwd.getView().setFarClipDistance(modelViewFarClip);
-            bmv.setZoom(900000);
-            bmv.setPitch(Angle.fromDegrees(45));
+          //  wwd.getView().setNearClipDistance(modelViewNearClip);
+          //  wwd.getView().setFarClipDistance(modelViewFarClip);
+       //     bmv.setZoom(900000);
+        //    bmv.setPitch(Angle.fromDegrees(45));
             
-            // change class for inputHandler
-            Configuration.setValue(AVKey.INPUT_HANDLER_CLASS_NAME, 
-                        BasicModelViewInputHandler3.class.getName());
+//            // change class for inputHandler
+//            Configuration.setValue(AVKey.INPUT_HANDLER_CLASS_NAME, 
+//                        BasicModelViewInputHandler3.class.getName());
 
             // re-setup control layer handler
             this.getWwd().addSelectListener(new ViewControlsSelectListener(wwd, viewControlsLayer));
@@ -1281,7 +1282,7 @@ private void fullScreenButtonActionPerformed(java.awt.event.ActionEvent evt) {//
             // Hmm need to do something to keet the ECI view moving even after user interaction
             // seems to work after you click off globe after messing with it
             // this fixes the problem:
-            wwd.getView().stopStateIterators();
+            //wwd.getView().stopStateIterators();
             wwd.getView().stopMovement(); //seems to fix prop in v0.5
             
             // update rotation of view and Stars
@@ -1530,7 +1531,7 @@ private void fullScreenButtonActionPerformed(java.awt.event.ActionEvent evt) {//
         farClippingPlaneDistOrbit = clipDist;
         if(!this.isModelViewMode())
         {
-            wwd.getView().setFarClipDistance(farClippingPlaneDistOrbit);
+            //wwd.getView().setFarClipDistance(farClippingPlaneDistOrbit);
         }
     }
 
@@ -1544,7 +1545,7 @@ private void fullScreenButtonActionPerformed(java.awt.event.ActionEvent evt) {//
         nearClippingPlaneDistOrbit = clipDist;
         if(!this.isModelViewMode())
         {
-            wwd.getView().setNearClipDistance(nearClippingPlaneDistOrbit);
+            //wwd.getView().setNearClipDistance(nearClippingPlaneDistOrbit);
         }
     }
 

@@ -30,7 +30,10 @@ import java.awt.Graphics2D;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Hashtable;
+import java.util.Set;
 import java.util.Vector;
+import java.util.concurrent.CopyOnWriteArraySet;
+
 import jsattrak.gui.J2dEarthLabel2;
 import jsattrak.objects.AbstractSatellite;
 import jsattrak.objects.GroundStation;
@@ -60,8 +63,14 @@ public class CoverageAnalyzer implements JSatTrakRenderable,JSatTrakTimeDependen
     ColorMap colorMap = new ColorMap();
     
     private double lastMJD = -1; // last MJD update time
-    
-    Vector<String> satsUsedInCoverage = new Vector<String>(); // vector of satellites used in Coverage anaylsis
+
+    /**
+     *  thread safe set of satellites used in Coverage analysis
+     *  when rendering, we are provided a set of satellites, we iterate through the list and check the satellite
+     *  names against this list, if the satellite is not included in this list, it is not included in
+     *  the coverage analysis
+     */
+    private Set<String> satsUsedInCoverage = new CopyOnWriteArraySet<String>();
     
     // settings ===========
     // grid sizing >=1
@@ -87,13 +96,19 @@ public class CoverageAnalyzer implements JSatTrakRenderable,JSatTrakTimeDependen
     private // pixels below bar where text is displayed
     Color colorbarBGcolor = new Color(255, 255, 255, 180);
     private Color colorBarTextcolor = Color.BLACK;
+    private boolean heatmapMode = true;
     
     // default constructor
     public CoverageAnalyzer()
     {
         iniParamters();
     } // constructor
-    
+
+    public void setHeatmapMode(boolean heatmapMode)
+    {
+        this.heatmapMode = heatmapMode;
+    }
+
     /**
      * Constructor with current time - this will allow coverage to start on next time step
      * @param currentJulianDate current Julian Date
@@ -450,8 +465,10 @@ public class CoverageAnalyzer implements JSatTrakRenderable,JSatTrakTimeDependen
         {
             for(int j=0;j<longPanels;j++)
             {
-                // DEBUG CLEAR VALUE SO ONLY POINTS CURRENTLY IN VIEW SHOW UP
-                //coverageCumTime[i][j] = 0;
+                if (!heatmapMode)
+                {
+                    coverageCumTime[i][j] = 0;
+                }
                 
                 if(tempAcessArray[i][j])
                 {
@@ -585,15 +602,6 @@ public class CoverageAnalyzer implements JSatTrakRenderable,JSatTrakTimeDependen
     
     public void addSatToCoverageAnaylsis(String satName)
     {
-        // first check to make sure sat isn't already in list
-        for(String name : satsUsedInCoverage)
-        {
-            if(satName.equalsIgnoreCase(name))
-            {
-                return; // already in the list
-            }
-        }
-        
         satsUsedInCoverage.add(satName);
     } // addSatToCoverageAnaylsis
     
@@ -604,22 +612,12 @@ public class CoverageAnalyzer implements JSatTrakRenderable,JSatTrakTimeDependen
     
     public void removeSatFromCoverageAnaylsis(String satName)
     {
-        // make sure name is in the Vector
-        int i=0; // counter
-        for(String name : satsUsedInCoverage)
-        {
-            if(satName.equalsIgnoreCase(name))
-            {
-                satsUsedInCoverage.remove(i);
-                return; // already in the list
-            }
-            i++;
-        }
+        satsUsedInCoverage.remove(satName);
     } // removeSatFromCoverageAnaylsis
     
     public Vector<String> getSatVector()
     {
-        return satsUsedInCoverage;
+        return new Vector<String>(satsUsedInCoverage);
     }
     
     // ======================================================

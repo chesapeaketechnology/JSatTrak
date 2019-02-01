@@ -119,23 +119,14 @@ public class SatelliteTleSGP4 extends AbstractSatellite
         // randomly pick color for satellite
         // === pick a random color
         Random generator = new Random();
-        switch( generator.nextInt(6) )
-        {
-            case 0: satColor = Color.red; break;
-            case 1: satColor = Color.blue; break;
-            case 2: satColor = Color.green; break;
-            case 3: satColor = Color.white; break;
-            case 4: satColor = Color.yellow; break;
-            case 5: satColor = Color.orange; break;
-            default: satColor = Color.red; break;
-        } // random color switch
+        satColor = new Color(generator.nextInt(255), generator.nextInt(255), generator.nextInt(255));
         
         
         // try to load TLE into propogator
 
         // options - hard coded
         char opsmode = SGP4utils.OPSMODE_IMPROVED; // OPSMODE_IMPROVED
-        SGP4unit.Gravconsttype gravconsttype = SGP4unit.Gravconsttype.wgs72;
+        SGP4unit.Gravconsttype gravconsttype = SGP4unit.Gravconsttype.wgs84;
 
         // load TLE data as strings and INI all SGP4 data
         boolean loadSuccess = SGP4utils.readTLEandIniSGP4(name, tleLine1, tleLine2, opsmode, gravconsttype, sgp4SatData);
@@ -162,7 +153,7 @@ public class SatelliteTleSGP4 extends AbstractSatellite
         // read TLE
         // options - hard coded
         char opsmode = SGP4utils.OPSMODE_IMPROVED; // OPSMODE_IMPROVED
-        SGP4unit.Gravconsttype gravconsttype = SGP4unit.Gravconsttype.wgs72;
+        SGP4unit.Gravconsttype gravconsttype = SGP4unit.Gravconsttype.wgs84;
 
         // load TLE data as strings and INI all SGP4 data
         boolean loadSuccess = SGP4utils.readTLEandIniSGP4(tle.getSatName(), tle.getLine1(), tle.getLine2(), opsmode, gravconsttype, sgp4SatData);
@@ -244,9 +235,9 @@ public class SatelliteTleSGP4 extends AbstractSatellite
         lla = GeoFunctions.GeodeticLLA(posTEME,julDate-AstroConst.JDminusMJD); // j2kPos
         
         // Check to see if the ascending node has been passed
-        if(showGroundTrack==true)
+        if(showGroundTrack)
         {
-            if(groundTrackIni == false ) // update ground track needed
+            if(!groundTrackIni) // update ground track needed
             {
                 initializeGroundTrack();
             }
@@ -391,10 +382,8 @@ public class SatelliteTleSGP4 extends AbstractSatellite
         
         // get lat and long
         double[] ptLla = GeoFunctions.GeodeticLLA(ptPos,ptTime-AstroConst.JDminusMJD);
-        
-        double[] ptLlaXyz = new double[] {ptLla[0],ptLla[1],ptLla[2],ptPos[0],ptPos[1],ptPos[2]};
-        
-        return ptLlaXyz;
+
+        return new double[] {ptLla[0],ptLla[1],ptLla[2],ptPos[0],ptPos[1],ptPos[2]};
     } // calculateLatLongAlt
     
     // 

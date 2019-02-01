@@ -49,7 +49,7 @@ public class SGP4verification
     {
         // settings
         char opsmode = SGP4utils.OPSMODE_IMPROVED; // OPSMODE_IMPROVED
-        SGP4unit.Gravconsttype gravconsttype = SGP4unit.Gravconsttype.wgs72;
+        SGP4unit.Gravconsttype gravconsttype = SGP4unit.Gravconsttype.wgs84;
         
         // tle verification file (with extra start, stop, timestep params on line 2)
         String verTLEfile = "sgp4-ver.tle"; // sgp4-ver.tle shawn_ver.tle

@@ -20,6 +20,9 @@
 package name.gano.worldwind.layers.Earth;
 
 import gov.nasa.worldwind.layers.RenderableLayer;
+import gov.nasa.worldwind.render.DrawContext;
+import gov.nasa.worldwind.render.Renderable;
+import java.awt.Point;
 
 /**
  *
@@ -37,6 +40,15 @@ public class ECEFRenderableLayer extends RenderableLayer
     public String toString()
     {
         return "ECEF Layer";
+    }
+    
+    protected void doPick(DrawContext dc, Point pickPoint)
+    {
+        
+    }
+    
+    protected void doPick(DrawContext dc, Iterable<? extends Renderable> renderables, Point pickPoint) {
+    
     }
     
 }
